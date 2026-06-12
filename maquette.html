@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maquette — Mementos-Memorie</title>
+<meta name="description" content="Démo : la galerie partagée que vos invités utilisent en scannant le QR code Mementos-Memorie.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="logo-memento.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://picsum.photos">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap">
+<style>
+:root{
+  --gold:#c9a24b;--gold-bright:#e7c98f;--gold-soft:#f3e3c0;
+  --plum:#2f1b24;--cream:#fdf8f2;--ink:#3a2630;
+  --accent:#c87e74;--bg:radial-gradient(circle at 30% 20%,#f6d9c9,#c87e74 70%,#8a4b46);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Jost',sans-serif;color:#fff;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow-x:hidden;}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(to bottom,rgba(30,16,22,.30),rgba(30,16,22,.62));}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;line-height:1.05;font-weight:600;}
+a{color:inherit;text-decoration:none;}
+img{display:block;max-width:100%;}
+
+/* ── Barre du haut ── */
+.topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px clamp(14px,4vw,40px);}
+.back{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;letter-spacing:.04em;padding:9px 18px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px);transition:background .25s,transform .25s;}
+.back:hover{background:rgba(255,255,255,.3);transform:translateX(-3px);}
+.preview-pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;padding:8px 16px;border-radius:999px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(6px);}
+.preview-pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold-bright);box-shadow:0 0 10px var(--gold-bright);}
+
+.screen{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;}
+.screen[hidden]{display:none;}
+
+/* ── Écran d'accueil ── */
+#welcome{align-items:center;justify-content:center;padding:24px clamp(16px,4vw,40px) 10px;}
+.welcome-card{width:min(560px,94vw);text-align:center;background:rgba(253,248,242,.12);border:1px solid rgba(255,255,255,.3);border-radius:34px;padding:clamp(34px,5vw,56px) clamp(24px,5vw,52px);box-shadow:0 40px 90px -30px rgba(20,10,16,.7);backdrop-filter:blur(14px);animation:rise .8s cubic-bezier(.2,.7,.2,1) both;}
+@keyframes rise{from{opacity:0;transform:translateY(26px) scale(.98);}to{opacity:1;transform:none;}}
+.crest{width:84px;height:84px;margin:0 auto 22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;background:conic-gradient(from 0deg,var(--gold-bright),var(--gold),var(--accent),var(--gold-bright));box-shadow:0 16px 36px -12px rgba(0,0,0,.5);}
+.eyebrow{display:inline-block;font-size:12px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;color:var(--gold-soft);margin-bottom:16px;}
+.welcome-card h1{font-size:clamp(34px,6vw,52px);margin-bottom:14px;text-shadow:0 2px 18px rgba(0,0,0,.3);}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;font-size:15px;letter-spacing:.04em;color:rgba(255,255,255,.92);margin-bottom:22px;}
+.divider{width:70px;height:1px;background:rgba(255,255,255,.45);margin:0 auto 26px;position:relative;}
+.divider::before{content:"✦";position:absolute;top:-11px;left:50%;transform:translateX(-50%);color:var(--gold-bright);font-size:14px;}
+.hosts-msg{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(18px,2.4vw,23px);line-height:1.45;color:#fff;max-width:42ch;margin:0 auto 30px;opacity:.96;}
+.btn-gold{display:inline-block;cursor:pointer;border:none;font-family:'Jost';font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:16px 38px;border-radius:999px;color:#fff;background:linear-gradient(135deg,var(--gold-bright),var(--gold) 60%,#a8842f);box-shadow:0 16px 34px -12px rgba(0,0,0,.55);transition:transform .25s,box-shadow .25s;}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 22px 44px -12px rgba(0,0,0,.6);}
+
+/* ── Écran galerie ── */
+.gal-head{position:relative;z-index:2;width:min(1100px,94vw);margin:6px auto 0;padding:18px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:rgba(253,248,242,.1);border:1px solid rgba(255,255,255,.22);border-radius:24px;backdrop-filter:blur(12px);}
+.gal-crest{width:54px;height:54px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;background:conic-gradient(from 0deg,var(--gold-bright),var(--gold),var(--accent),var(--gold-bright));box-shadow:0 10px 24px -10px rgba(0,0,0,.5);}
+.gal-head .gh-text{flex:1;min-width:180px;}
+.gal-head h2{font-size:clamp(24px,3.4vw,34px);}
+.gal-head .gh-sub{font-size:13.5px;color:rgba(255,255,255,.85);margin-top:2px;}
+.gh-count{font-weight:600;color:var(--gold-bright);}
+.gal-head .dl{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;padding:11px 20px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);transition:background .25s;}
+.gal-head .dl:hover{background:rgba(255,255,255,.3);}
+
+.gal-tools{position:relative;z-index:2;width:min(1100px,94vw);margin:16px auto 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.filter{font-size:13px;letter-spacing:.03em;padding:8px 16px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);transition:background .2s;}
+.filter:hover{background:rgba(255,255,255,.24);}
+.filter.active{background:#fff;color:var(--plum);font-weight:600;border-color:#fff;}
+.live-tag{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.9);}
+.live-tag .dot{width:9px;height:9px;border-radius:50%;background:#5fd27a;box-shadow:0 0 0 0 rgba(95,210,122,.6);animation:pulse 1.8s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(95,210,122,.6);}70%{box-shadow:0 0 0 10px rgba(95,210,122,0);}100%{box-shadow:0 0 0 0 rgba(95,210,122,0);}}
+
+.grid{position:relative;z-index:2;width:min(1100px,94vw);margin:14px auto 110px;columns:4 200px;column-gap:14px;}
+.tile{position:relative;break-inside:avoid;margin:0 0 14px;border-radius:16px;overflow:hidden;cursor:pointer;background:var(--bg);box-shadow:0 14px 30px -16px rgba(0,0,0,.6);transform:translateZ(0);transition:transform .3s,box-shadow .3s;animation:pop .5s cubic-bezier(.2,.7,.2,1) both;}
+.tile:hover{transform:translateY(-4px);box-shadow:0 22px 44px -16px rgba(0,0,0,.7);}
+.tile img{width:100%;height:auto;background:var(--bg);}
+.tile .who{position:absolute;left:0;right:0;bottom:0;padding:18px 12px 9px;font-size:12px;color:#fff;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);opacity:0;transition:opacity .3s;}
+.tile:hover .who{opacity:1;}
+.tile.video::after{content:"";position:absolute;top:50%;left:50%;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;background:rgba(0,0,0,.45) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/22px no-repeat;border:2px solid rgba(255,255,255,.85);backdrop-filter:blur(2px);}
+.tile .dur{position:absolute;top:9px;right:9px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.55);letter-spacing:.04em;}
+.tile.fresh{outline:3px solid var(--gold-bright);outline-offset:-3px;}
+@keyframes pop{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:none;}}
+
+/* bouton flottant ajouter */
+.fab{position:fixed;z-index:6;right:clamp(16px,4vw,38px);bottom:clamp(18px,4vw,34px);display:inline-flex;align-items:center;gap:10px;cursor:pointer;border:none;font-family:'Jost';font-size:15px;font-weight:600;letter-spacing:.04em;color:#fff;padding:15px 24px;border-radius:999px;background:linear-gradient(135deg,var(--gold-bright),var(--gold) 60%,#a8842f);box-shadow:0 18px 38px -12px rgba(0,0,0,.6);transition:transform .25s,box-shadow .25s;}
+.fab:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 24px 48px -12px rgba(0,0,0,.65);}
+.fab .plus{font-size:21px;line-height:1;}
+
+/* toast */
+.toast{position:fixed;z-index:7;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:12px;padding:13px 20px;border-radius:16px;background:rgba(20,12,16,.86);border:1px solid rgba(255,255,255,.22);box-shadow:0 18px 40px -14px rgba(0,0,0,.7);backdrop-filter:blur(8px);transition:opacity .35s,transform .35s;max-width:min(420px,90vw);}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+.toast .ava{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--plum);background:var(--gold-bright);}
+.toast .tx{font-size:13.5px;line-height:1.3;}
+.toast .tx b{color:var(--gold-bright);}
+
+/* lightbox */
+.lightbox{position:fixed;z-index:9;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,5,8,.86);backdrop-filter:blur(6px);}
+.lightbox.show{display:flex;}
+.lb-img{max-width:min(900px,92vw);max-height:82vh;border-radius:14px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);background:var(--bg);}
+.lb-cap{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-size:14px;color:rgba(255,255,255,.9);text-align:center;}
+.lb-btn{position:absolute;top:50%;transform:translateY(-50%);width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;color:#fff;font-size:24px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);transition:background .2s;}
+.lb-btn:hover{background:rgba(255,255,255,.3);}
+.lb-prev{left:18px;}.lb-next{right:18px;}
+.lb-close{position:absolute;top:18px;right:18px;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;color:#fff;font-size:22px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);}
+.lb-close:hover{background:rgba(255,255,255,.3);}
+
+/* sélecteur de thème */
+.theme-switch{position:relative;z-index:2;padding:6px clamp(16px,4vw,40px) 30px;text-align:center;}
+.theme-switch .ts-label{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:14px;}
+.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;}
+.chip{font-size:13px;letter-spacing:.03em;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(5px);transition:background .2s,transform .2s;}
+.chip:hover{background:rgba(255,255,255,.26);transform:translateY(-2px);}
+.chip.active{background:#fff;color:var(--plum);font-weight:600;border-color:#fff;}
+
+@media(max-width:520px){.topbar{flex-wrap:wrap;}.grid{columns:2 140px;}.fab span.lbl{display:none;}.fab{padding:16px;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="index.html">← Retour à Mementos-Memorie</a>
+  <span class="preview-pill">Démo — exemple de galerie</span>
+</div>
+
+<!-- ÉCRAN 1 : ACCUEIL -->
+<section class="screen" id="welcome">
+  <div class="welcome-card">
+    <div class="crest" id="crest">💍</div>
+    <span class="eyebrow" id="eyebrow">Bienvenue</span>
+    <h1 id="title">Mariage de Léa &amp; Tom</h1>
+    <div class="meta">
+      <span id="date">📅 12 juin 2026</span>
+      <span id="place">📍 Domaine des Roses · Lyon</span>
+    </div>
+    <div class="divider"></div>
+    <p class="hosts-msg" id="message">« Partagez vos plus beaux instants de cette journée. »</p>
+    <button class="btn-gold" id="enterBtn">Entrer dans la galerie</button>
+  </div>
+</section>
+
+<!-- ÉCRAN 2 : GALERIE -->
+<section class="screen" id="gallery" hidden>
+  <div class="gal-head">
+    <div class="gal-crest" id="galCrest">💍</div>
+    <div class="gh-text">
+      <h2 id="galTitle">Mariage de Léa & Tom</h2>
+      <div class="gh-sub"><span class="gh-count" id="cPhotos">0</span> photos · <span class="gh-count" id="cVideos">0</span> vidéos partagées par vos invités</div>
+    </div>
+    <span class="dl" id="dlBtn">⬇ Tout télécharger</span>
+  </div>
+
+  <div class="gal-tools">
+    <button class="filter active" data-filter="all">Tout</button>
+    <button class="filter" data-filter="photo">Photos</button>
+    <button class="filter" data-filter="video">Vidéos</button>
+    <span class="live-tag"><span class="dot"></span> En direct</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- bouton flottant : simuler un ajout -->
+<button class="fab" id="fab" hidden><span class="plus">＋</span><span class="lbl">Ajouter une photo</span></button>
+
+<!-- toast -->
+<div class="toast" id="toast">
+  <div class="ava" id="toastAva">?</div>
+  <div class="tx" id="toastTx"></div>
+</div>
+
+<!-- lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose" aria-label="Fermer">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Précédent">‹</button>
+  <img class="lb-img" id="lbImg" alt="">
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Suivant">›</button>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<!-- sélecteur de thème -->
+<div class="theme-switch">
+  <div class="ts-label">Voir un autre thème</div>
+  <div class="chips" id="chips"></div>
+</div>
+
+<script>
+/* ───── Données des 8 thèmes (ordre des couleurs = celui des cartes du site) ───── */
+const THEMES = {
+  mariage:      {label:'Mariage',             icon:'💍', eyebrow:'Notre mariage',      title:'Mariage de Léa & Tom',       date:'12 juin 2026',     place:'Domaine des Roses · Lyon', message:'« Partagez vos plus beaux instants de cette journée — chaque photo nous fera revivre ce moment. »', bg:'radial-gradient(circle at 30% 20%,#f6d9c9,#c87e74 70%,#8a4b46)', accent:'#c87e74', guests:['Camille','Thomas','Léa','Hugo','Manon','Paul','Sarah','Lucas']},
+  anniversaire: {label:'Anniversaire',        icon:'🎉', eyebrow:'On fête ça',         title:'Les 50 ans de Sophie',       date:'5 septembre 2026', place:'Bordeaux',                 message:'« Immortalisez chaque sourire et chaque bougie — ce soir, on collectionne les souvenirs. »',        bg:'radial-gradient(circle at 70% 25%,#ffe6a8,#c9a24b 65%,#8a6620)', accent:'#c9a24b', guests:['Sophie','Marc','Julie','Nadia','Théo','Inès','Yanis','Clara']},
+  teambuilding: {label:'Teambuilding',        icon:'🤝', eyebrow:'Esprit d’équipe',    title:'Séminaire Lumen 2026',       date:'18 mars 2026',     place:'Annecy',                   message:'« Capturez les meilleurs moments de ces deux jours : une trace collective de l’énergie de l’équipe. »', bg:'radial-gradient(circle at 40% 30%,#ffd2a3,#c0440f 65%,#7a2c08)', accent:'#c0440f', guests:['Équipe RH','Marketing','Karim','Léna','Ops','Dev','Sales','Direction']},
+  fiancailles:  {label:'Fiançailles',         icon:'💛', eyebrow:'Notre promesse',     title:'Fiançailles d’Inès & Karim', date:'21 juin 2026',     place:'Paris',                    message:'« Le début de notre histoire mérite d’être partagé — envoyez-nous vos photos de ce moment. »',       bg:'radial-gradient(circle at 65% 20%,#ffdfe0,#d98a8a 65%,#8a4150)', accent:'#d98a8a', guests:['Inès','Karim','Maman','Léo','Amélie','Sami','Nora','Tonton']},
+  bapteme:      {label:'Baptême & Communion', icon:'🕊️', eyebrow:'En famille',          title:'Baptême de Gabriel',         date:'14 mai 2026',      place:'Nantes',                   message:'« Réunissons tous les souvenirs de cette belle journée en famille. »',                              bg:'radial-gradient(circle at 35% 25%,#fbe6cf,#e7c98f 60%,#a8842f)', accent:'#c9a24b', guests:['Marraine','Parrain','Mamie','Papi','Élise','Gabriel','Louis','Emma']},
+  gala:         {label:'Soirée & Gala',       icon:'🥂', eyebrow:'Grand rendez-vous',  title:'Gala annuel Étoiles',        date:'29 novembre 2026', place:'Hôtel Royal · Marseille',  message:'« Du cocktail à la remise des prix, une trace élégante de cette soirée d’exception. »',             bg:'radial-gradient(circle at 60% 30%,#b98aa0,#5b3a48 65%,#2f1b24)', accent:'#b98aa0', guests:['Présidence','Invité VIP','Orchestre','Table 4','Photographe','Service','Jury','Lauréats']},
+  evjf:         {label:'EVJF / EVG',           icon:'🎊', eyebrow:'Entre amis',         title:'EVJF de Manon',              date:'7 août 2026',      place:'Biarritz',                 message:'« Tous les fous rires du week-end au même endroit — surtout les plus folles ! »',                   bg:'radial-gradient(circle at 40% 20%,#ffe2c2,#e0a06a 65%,#9a5a2a)', accent:'#e0a06a', guests:['Manon','Les copines','Chloé','Jade','Romane','Anaïs','Lou','Maëlys']},
+  diplome:      {label:'Remise de diplôme',   icon:'🎓', eyebrow:'Jour de fierté',     title:'Promotion 2026',             date:'27 juin 2026',     place:'Campus · Toulouse',        message:'« Célébrons cette réussite ensemble — partagez vos photos de la cérémonie. »',                      bg:'radial-gradient(circle at 65% 25%,#f0d9a0,#b8893a 60%,#6e4d18)', accent:'#b8893a', guests:['Promo A','Promo B','Parents','Doyen','Léo','Sarah','Mehdi','Camille']}
+};
+const ORDER = ['mariage','anniversaire','teambuilding','fiancailles','bapteme','gala','evjf','diplome'];
+
+/* thème depuis l'URL (?theme=...) avec repli sur "mariage" */
+const params = new URLSearchParams(location.search);
+let key = (params.get('theme') || 'mariage').toLowerCase();
+if (!THEMES[key]) key = 'mariage';
+const t = THEMES[key];
+
+/* ───── application du thème ───── */
+document.body.style.setProperty('--bg', t.bg);
+document.body.style.background = t.bg;
+document.documentElement.style.setProperty('--accent', t.accent);
+document.title = 'Maquette — ' + t.label + ' · Mementos-Memorie';
+const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+set('crest', t.icon); set('eyebrow', t.eyebrow); set('title', t.title);
+set('date', '📅 ' + t.date); set('place', '📍 ' + t.place); set('message', t.message);
+set('galCrest', t.icon); set('galTitle', t.title);
+
+/* ───── construction de la galerie ───── */
+const VIDEO_IDX = new Set([2, 6, 11]);   // quelques tuiles "vidéo"
+const DURS = ['0:12','0:34','1:05','0:48','0:21'];
+let items = [];          // {seed, type, who, h, dur}
+function makeItem(i){
+  const who = t.guests[i % t.guests.length];
+  const isVid = VIDEO_IDX.has(i);
+  const heights = [320,420,360,500,300,440,380];
+  return { seed: key + '-' + i, type: isVid ? 'video' : 'photo', who, h: heights[i % heights.length], dur: isVid ? DURS[i % DURS.length] : null };
+}
+for (let i = 0; i < 14; i++) items.push(makeItem(i));
+
+const grid = document.getElementById('grid');
+function imgUrl(seed, h){ return 'https://picsum.photos/seed/' + encodeURIComponent(seed) + '/420/' + h; }
+function renderTile(it, fresh){
+  const tile = document.createElement('figure');
+  tile.className = 'tile' + (it.type === 'video' ? ' video' : '') + (fresh ? ' fresh' : '');
+  tile.dataset.type = it.type;
+  tile.innerHTML =
+    '<img loading="lazy" src="' + imgUrl(it.seed, it.h) + '" alt="Souvenir partagé par ' + it.who + '">' +
+    (it.dur ? '<span class="dur">▶ ' + it.dur + '</span>' : '') +
+    '<figcaption class="who">📷 ' + it.who + '</figcaption>';
+  tile.addEventListener('click', () => openLightbox(it));
+  return tile;
+}
+function paint(){
+  grid.innerHTML = '';
+  items.forEach(it => grid.appendChild(renderTile(it, false)));
+  updateCounts();
+}
+function updateCounts(){
+  set('cPhotos', items.filter(i => i.type === 'photo').length);
+  set('cVideos', items.filter(i => i.type === 'video').length);
+}
+paint();
+applyFilter('all');
+
+/* ───── filtres ───── */
+function applyFilter(f){
+  document.querySelectorAll('.tile').forEach(tl => {
+    tl.style.display = (f === 'all' || tl.dataset.type === f) ? '' : 'none';
+  });
+}
+document.querySelectorAll('.filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter(btn.dataset.filter);
+  });
+});
+
+/* ───── navigation accueil → galerie ───── */
+const welcome = document.getElementById('welcome');
+const gallery = document.getElementById('gallery');
+const fab = document.getElementById('fab');
+function showGallery(){
+  welcome.hidden = true; gallery.hidden = false; fab.hidden = false;
+  window.scrollTo({ top: 0 });
+}
+document.getElementById('enterBtn').addEventListener('click', showGallery);
+
+/* ───── bouton + : simuler un invité qui poste ───── */
+const toast = document.getElementById('toast');
+let toastTimer;
+function showToast(name, msg){
+  document.getElementById('toastAva').textContent = (name[0] || '?').toUpperCase();
+  document.getElementById('toastTx').innerHTML = '<b>' + name + '</b> ' + msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+let nextIdx = items.length;
+fab.addEventListener('click', () => {
+  const newItem = makeItem(nextIdx++);
+  newItem.type = 'photo';   // un invité ajoute une photo
+  newItem.dur = null;
+  newItem.seed = key + '-add-' + nextIdx;
+  items.unshift(newItem);
+  const tile = renderTile(newItem, true);
+  grid.prepend(tile);
+  updateCounts();
+  const active = document.querySelector('.filter.active');
+  if (active) applyFilter(active.dataset.filter);
+  showToast(newItem.who, 'vient d’ajouter une photo 📸');
+  setTimeout(() => tile.classList.remove('fresh'), 2200);
+});
+
+/* ───── téléchargement (démo) ───── */
+document.getElementById('dlBtn').addEventListener('click', () => {
+  showToast('Mementos-Memorie', '— dans la vraie galerie, vos ' + items.length + ' souvenirs se téléchargent en HD ✦');
+});
+
+/* ───── lightbox ───── */
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbCap = document.getElementById('lbCap');
+let lbList = [], lbPos = 0;
+function openLightbox(it){
+  lbList = items.filter(x => x.type !== '__none');
+  lbPos = lbList.indexOf(it);
+  renderLb();
+  lb.classList.add('show');
+}
+function renderLb(){
+  const it = lbList[lbPos];
+  lbImg.src = imgUrl(it.seed, 700);
+  lbImg.alt = 'Souvenir partagé par ' + it.who;
+  lbCap.innerHTML = (it.type === 'video' ? '🎬 Vidéo' : '📷 Photo') + ' · partagé par <b>' + it.who + '</b>';
+}
+function move(d){ lbPos = (lbPos + d + lbList.length) % lbList.length; renderLb(); }
+document.getElementById('lbNext').addEventListener('click', e => { e.stopPropagation(); move(1); });
+document.getElementById('lbPrev').addEventListener('click', e => { e.stopPropagation(); move(-1); });
+document.getElementById('lbClose').addEventListener('click', () => lb.classList.remove('show'));
+lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('show'); });
+document.addEventListener('keydown', e => {
+  if (!lb.classList.contains('show')) return;
+  if (e.key === 'Escape') lb.classList.remove('show');
+  if (e.key === 'ArrowRight') move(1);
+  if (e.key === 'ArrowLeft') move(-1);
+});
+
+/* ───── chips de thèmes ───── */
+const chips = document.getElementById('chips');
+ORDER.forEach(k => {
+  const a = document.createElement('a');
+  a.className = 'chip' + (k === key ? ' active' : '');
+  a.href = 'maquette.html?theme=' + k;
+  a.textContent = THEMES[k].icon + '  ' + THEMES[k].label;
+  if (k === key) a.setAttribute('aria-current', 'page');
+  chips.appendChild(a);
+});
+
+/* si l'URL contient #galerie, on saute directement à la galerie */
+if (location.hash === '#galerie') showGallery();
+</script>
+</body>
+</html>
