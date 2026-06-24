@@ -3,170 +3,283 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maquette — Mementos-Memorie</title>
-<meta name="description" content="Démo : la galerie partagée que vos invités utilisent en scannant le QR code Mementos-Memorie.">
+<title>Maquette interactive — Mementos-Memorie</title>
+<meta name="description" content="Démo interactive : intro animée, galerie partagée et catégories. La galerie que vos invités utilisent en scannant le QR code Mementos-Memorie.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="logo-memento.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://picsum.photos">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Poppins:wght@300;400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap">
 <style>
 :root{
-  --gold:#c9a24b;--gold-bright:#e7c98f;--gold-soft:#f3e3c0;
-  --plum:#2f1b24;--cream:#fdf8f2;--ink:#3a2630;
-  --accent:#c87e74;--bg:radial-gradient(circle at 30% 20%,#f6d9c9,#c87e74 70%,#8a4b46);
+  --bg:#2f1b24;--overlay:linear-gradient(to bottom,rgba(20,12,16,.18),rgba(20,12,16,.5));
+  --accent:#c9a24b;--accent2:#e7c98f;--txt:#fff;--txt-soft:rgba(255,255,255,.85);
+  --glass:rgba(255,255,255,.12);--glass-brd:rgba(255,255,255,.30);--on-accent:#fff;
+  --font-head:'Cormorant Garamond',serif;--font-body:'Jost',sans-serif;--radius:24px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:'Jost',sans-serif;color:#fff;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow-x:hidden;}
-body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(to bottom,rgba(30,16,22,.30),rgba(30,16,22,.62));}
-h1,h2,h3{font-family:'Cormorant Garamond',serif;line-height:1.05;font-weight:600;}
+body{font-family:var(--font-body);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;background:var(--bg);background-attachment:fixed;position:relative;overflow-x:hidden;transition:background .6s ease,color .4s ease;}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:var(--overlay);transition:background .6s ease;}
+h1,h2,h3{font-family:var(--font-head);line-height:1.06;font-weight:600;}
 a{color:inherit;text-decoration:none;}
 img{display:block;max-width:100%;}
+button{font-family:var(--font-body);}
 
-/* ── Barre du haut ── */
-.topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px clamp(14px,4vw,40px);}
-.back{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;letter-spacing:.04em;padding:9px 18px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px);transition:background .25s,transform .25s;}
-.back:hover{background:rgba(255,255,255,.3);transform:translateX(-3px);}
-.preview-pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;padding:8px 16px;border-radius:999px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(6px);}
-.preview-pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold-bright);box-shadow:0 0 10px var(--gold-bright);}
+.charms{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+.charm{position:absolute;top:-60px;opacity:0;animation:charmFall linear infinite;will-change:transform,opacity;}
+@keyframes charmFall{0%{transform:translateY(-60px) rotate(0);opacity:0;}8%{opacity:.28;}50%{transform:translateY(52vh) rotate(200deg);opacity:.2;}92%{opacity:.12;}100%{transform:translateY(110vh) rotate(360deg);opacity:0;}}
 
-.screen{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;}
-.screen[hidden]{display:none;}
+#intro{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:space-between;cursor:pointer;overflow:hidden;background:var(--bg);text-align:center;padding:clamp(36px,7vh,72px) 20px;}
+#intro::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 45%,transparent,rgba(8,5,12,.55) 100%),linear-gradient(to bottom,rgba(8,5,12,.35),rgba(8,5,12,.6));}
+#intro.fade-out{animation:introZoom 1.2s cubic-bezier(.4,0,1,1) forwards;}
+@keyframes introZoom{0%{opacity:1;transform:scale(1);filter:blur(0) brightness(1);}30%{transform:scale(1.5);filter:brightness(1.1);}60%{transform:scale(3);filter:blur(2px) brightness(1.7);}80%{opacity:.5;transform:scale(5);filter:blur(6px) brightness(3);}100%{opacity:0;transform:scale(8);filter:blur(12px) brightness(5);}}
+.intro-top{position:relative;z-index:3;animation:fadeDown 1.2s ease .3s both;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
+.intro-script{font-family:var(--font-head);font-size:clamp(34px,7vw,60px);font-weight:600;color:var(--txt);letter-spacing:.02em;text-shadow:0 2px 30px rgba(0,0,0,.4);}
+.intro-sub{font-size:clamp(13px,2.4vw,17px);font-weight:500;color:var(--accent2);letter-spacing:.4em;text-transform:uppercase;margin-top:6px;}
+.intro-center{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;}
+.intro-emoji{font-size:clamp(96px,26vw,180px);line-height:1;filter:drop-shadow(0 18px 50px rgba(0,0,0,.5));animation:introFloat 5s ease-in-out infinite;}
+@keyframes introFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-16px) rotate(2deg);}}
+.intro-glow{position:absolute;width:60%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--accent2),transparent 65%);opacity:.55;filter:blur(20px);animation:introGlow 4s ease-in-out infinite;}
+@keyframes introGlow{0%,100%{opacity:.32;transform:scale(.94);}50%{opacity:.7;transform:scale(1.1);}}
+.intro-bottom{position:relative;z-index:3;animation:fadeUp 1.2s ease .55s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.intro-tagline{font-family:var(--font-head);font-style:italic;font-size:clamp(17px,3vw,24px);color:var(--txt);opacity:.95;}
+.intro-orn{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0;}
+.intro-orn .l,.intro-orn .r{width:48px;height:1px;background:var(--glass-brd);}
+.intro-orn .d{color:var(--accent2);font-size:13px;}
+.intro-date{font-size:13.5px;letter-spacing:.06em;color:var(--txt-soft);}
+.intro-tap{margin-top:18px;font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--accent2);animation:tapBlink 2.2s ease 1.6s infinite;}
+@keyframes tapBlink{0%,100%{opacity:0;}40%,60%{opacity:.9;}}
 
-/* ── Écran d'accueil ── */
-#welcome{align-items:center;justify-content:center;padding:24px clamp(16px,4vw,40px) 10px;}
-.welcome-card{width:min(560px,94vw);text-align:center;background:rgba(253,248,242,.12);border:1px solid rgba(255,255,255,.3);border-radius:34px;padding:clamp(34px,5vw,56px) clamp(24px,5vw,52px);box-shadow:0 40px 90px -30px rgba(20,10,16,.7);backdrop-filter:blur(14px);animation:rise .8s cubic-bezier(.2,.7,.2,1) both;}
-@keyframes rise{from{opacity:0;transform:translateY(26px) scale(.98);}to{opacity:1;transform:none;}}
-.crest{width:84px;height:84px;margin:0 auto 22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;background:conic-gradient(from 0deg,var(--gold-bright),var(--gold),var(--accent),var(--gold-bright));box-shadow:0 16px 36px -12px rgba(0,0,0,.5);}
-.eyebrow{display:inline-block;font-size:12px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;color:var(--gold-soft);margin-bottom:16px;}
-.welcome-card h1{font-size:clamp(34px,6vw,52px);margin-bottom:14px;text-shadow:0 2px 18px rgba(0,0,0,.3);}
-.meta{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;font-size:15px;letter-spacing:.04em;color:rgba(255,255,255,.92);margin-bottom:22px;}
-.divider{width:70px;height:1px;background:rgba(255,255,255,.45);margin:0 auto 26px;position:relative;}
-.divider::before{content:"✦";position:absolute;top:-11px;left:50%;transform:translateX(-50%);color:var(--gold-bright);font-size:14px;}
-.hosts-msg{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(18px,2.4vw,23px);line-height:1.45;color:#fff;max-width:42ch;margin:0 auto 30px;opacity:.96;}
-.btn-gold{display:inline-block;cursor:pointer;border:none;font-family:'Jost';font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:16px 38px;border-radius:999px;color:#fff;background:linear-gradient(135deg,var(--gold-bright),var(--gold) 60%,#a8842f);box-shadow:0 16px 34px -12px rgba(0,0,0,.55);transition:transform .25s,box-shadow .25s;}
-.btn-gold:hover{transform:translateY(-3px);box-shadow:0 22px 44px -12px rgba(0,0,0,.6);}
+.topbar{position:relative;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px clamp(12px,4vw,34px);flex-wrap:wrap;}
+.tb-left,.tb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.back,.pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;letter-spacing:.03em;padding:9px 16px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-brd);backdrop-filter:blur(8px);cursor:pointer;transition:background .25s,transform .25s;color:var(--txt);}
+.back:hover{transform:translateX(-3px);}
+.brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-head);font-size:18px;font-weight:600;}
+.brand img{width:30px;height:30px;}
+.style-switch{position:relative;z-index:6;display:flex;flex-direction:column;align-items:center;gap:7px;padding:2px clamp(12px,4vw,34px) 6px;}
+.ss-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--txt-soft);opacity:.85;}
+.ss-note{margin-top:9px;max-width:52ch;text-align:center;font-size:12.5px;line-height:1.5;color:var(--txt-soft);opacity:.95;}
+.ss-note b{color:var(--accent2);font-weight:600;}
+.seg{display:inline-flex;gap:4px;padding:5px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-brd);backdrop-filter:blur(10px);flex-wrap:wrap;justify-content:center;}
+.seg button{border:none;background:transparent;color:var(--txt-soft);font-size:13px;font-weight:500;padding:9px 17px;border-radius:999px;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:7px;}
+.seg button .sw{width:13px;height:13px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);}
+.seg button:hover{color:var(--txt);}
+.seg button.active{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--on-accent);font-weight:600;box-shadow:0 8px 20px -8px rgba(0,0,0,.5);}
 
-/* ── Écran galerie ── */
-.gal-head{position:relative;z-index:2;width:min(1100px,94vw);margin:6px auto 0;padding:18px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:rgba(253,248,242,.1);border:1px solid rgba(255,255,255,.22);border-radius:24px;backdrop-filter:blur(12px);}
-.gal-crest{width:54px;height:54px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;background:conic-gradient(from 0deg,var(--gold-bright),var(--gold),var(--accent),var(--gold-bright));box-shadow:0 10px 24px -10px rgba(0,0,0,.5);}
-.gal-head .gh-text{flex:1;min-width:180px;}
-.gal-head h2{font-size:clamp(24px,3.4vw,34px);}
-.gal-head .gh-sub{font-size:13.5px;color:rgba(255,255,255,.85);margin-top:2px;}
-.gh-count{font-weight:600;color:var(--gold-bright);}
-.gal-head .dl{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;padding:11px 20px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);transition:background .25s;}
-.gal-head .dl:hover{background:rgba(255,255,255,.3);}
+#app{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;}
+#app[hidden]{display:none;}
+.app-head{width:min(1100px,94vw);margin:6px auto 4px;display:flex;align-items:center;gap:14px;justify-content:center;text-align:center;flex-direction:column;}
+.app-crest{width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;background:conic-gradient(from 0deg,var(--accent2),var(--accent),var(--accent2));box-shadow:0 12px 28px -10px rgba(0,0,0,.5);animation:rise .6s both;}
+.app-head h1{font-size:clamp(26px,4.6vw,40px);}
+.app-head .meta{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;font-size:14px;color:var(--txt-soft);margin-top:2px;}
+@keyframes rise{from{opacity:0;transform:translateY(20px) scale(.98);}to{opacity:1;transform:none;}}
 
-.gal-tools{position:relative;z-index:2;width:min(1100px,94vw);margin:16px auto 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.filter{font-size:13px;letter-spacing:.03em;padding:8px 16px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);transition:background .2s;}
-.filter:hover{background:rgba(255,255,255,.24);}
-.filter.active{background:#fff;color:var(--plum);font-weight:600;border-color:#fff;}
-.live-tag{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.9);}
+.tabs{display:flex;justify-content:center;gap:8px;width:min(1100px,94vw);margin:18px auto 8px;}
+.tab{flex:0 1 170px;padding:13px 10px;border-radius:100px;border:1.5px solid var(--glass-brd);background:var(--glass);color:var(--txt-soft);font-size:11px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:all .28s;backdrop-filter:blur(8px);}
+.tab.on{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--on-accent);border-color:transparent;font-weight:600;box-shadow:0 8px 20px -10px rgba(0,0,0,.5);}
+.tab:not(.on):hover{filter:brightness(1.12);}
+
+.panel{width:min(1100px,94vw);margin:10px auto 120px;}
+.panel[hidden]{display:none;}
+.panel-anim{animation:rise .5s both;}
+
+.share-msg{text-align:center;max-width:60ch;margin:6px auto 22px;font-family:var(--font-head);font-style:italic;font-size:clamp(17px,2.4vw,22px);line-height:1.45;opacity:.96;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.flip-wrap{perspective:900px;height:172px;cursor:pointer;}
+.flip-card{width:100%;height:100%;transform-style:preserve-3d;transition:transform .58s cubic-bezier(.4,.2,.2,1);position:relative;}
+.flip-card.flipped{transform:rotateY(180deg);}
+.flip-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;}
+.flip-front{background:var(--glass);border:1.5px solid var(--glass-brd);backdrop-filter:blur(10px);box-shadow:0 14px 30px -18px rgba(0,0,0,.6);transition:transform .3s;}
+.flip-wrap:hover .flip-front{transform:translateY(-3px);}
+.flip-back{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--on-accent);transform:rotateY(180deg);box-shadow:0 18px 36px -16px rgba(0,0,0,.55);}
+.flip-emoji{font-size:40px;margin-bottom:8px;}
+.flip-name{font-family:var(--font-head);font-size:21px;font-weight:600;}
+.flip-desc{font-size:13px;line-height:1.5;margin-bottom:14px;opacity:.95;}
+.flip-btn{padding:10px 22px;border-radius:999px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.5);color:var(--on-accent);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;cursor:pointer;}
+.flip-btn:hover{background:rgba(255,255,255,.36);}
+.share-hint{text-align:center;margin-top:18px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-soft);opacity:.8;}
+
+.gal-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 20px;background:var(--glass);border:1px solid var(--glass-brd);border-radius:20px;backdrop-filter:blur(12px);margin-bottom:14px;}
+.gh-text{flex:1;min-width:170px;}
+.gal-head h2{font-size:clamp(21px,3vw,28px);}
+.gh-sub{font-size:13.5px;color:var(--txt-soft);margin-top:2px;}
+.gh-count{font-weight:600;color:var(--accent2);}
+.dl{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;padding:11px 18px;border-radius:999px;cursor:pointer;background:var(--glass);border:1px solid var(--glass-brd);color:var(--txt);}
+.dl:hover{filter:brightness(1.12);}
+.gal-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:14px;}
+.filter{font-size:13px;padding:8px 15px;border-radius:999px;cursor:pointer;background:var(--glass);border:1px solid var(--glass-brd);transition:all .2s;color:var(--txt);display:inline-flex;align-items:center;gap:6px;}
+.filter:hover{filter:brightness(1.12);}
+.filter.active{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--on-accent);font-weight:600;border-color:transparent;}
+.live-tag{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt-soft);}
 .live-tag .dot{width:9px;height:9px;border-radius:50%;background:#5fd27a;box-shadow:0 0 0 0 rgba(95,210,122,.6);animation:pulse 1.8s infinite;}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(95,210,122,.6);}70%{box-shadow:0 0 0 10px rgba(95,210,122,0);}100%{box-shadow:0 0 0 0 rgba(95,210,122,0);}}
-
-.grid{position:relative;z-index:2;width:min(1100px,94vw);margin:14px auto 110px;columns:4 200px;column-gap:14px;}
-.tile{position:relative;break-inside:avoid;margin:0 0 14px;border-radius:16px;overflow:hidden;cursor:pointer;background:var(--bg);box-shadow:0 14px 30px -16px rgba(0,0,0,.6);transform:translateZ(0);transition:transform .3s,box-shadow .3s;animation:pop .5s cubic-bezier(.2,.7,.2,1) both;}
+.grid{columns:4 200px;column-gap:14px;}
+.tile{position:relative;break-inside:avoid;margin:0 0 14px;border-radius:16px;overflow:hidden;cursor:pointer;background:var(--glass);box-shadow:0 14px 30px -16px rgba(0,0,0,.6);transition:transform .3s,box-shadow .3s;animation:pop .5s cubic-bezier(.2,.7,.2,1) both;}
 .tile:hover{transform:translateY(-4px);box-shadow:0 22px 44px -16px rgba(0,0,0,.7);}
-.tile img{width:100%;height:auto;background:var(--bg);}
-.tile .who{position:absolute;left:0;right:0;bottom:0;padding:18px 12px 9px;font-size:12px;color:#fff;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);opacity:0;transition:opacity .3s;}
-.tile:hover .who{opacity:1;}
-.tile.video::after{content:"";position:absolute;top:50%;left:50%;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;background:rgba(0,0,0,.45) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/22px no-repeat;border:2px solid rgba(255,255,255,.85);backdrop-filter:blur(2px);}
-.tile .dur{position:absolute;top:9px;right:9px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.55);letter-spacing:.04em;}
-.tile.fresh{outline:3px solid var(--gold-bright);outline-offset:-3px;}
+.tile img{width:100%;height:auto;}
+.tile .who{position:absolute;left:0;right:0;bottom:0;padding:20px 12px 9px;font-size:12px;color:#fff;background:linear-gradient(to top,rgba(0,0,0,.65),transparent);}
+.tile .cat{position:absolute;top:9px;left:9px;font-size:10.5px;letter-spacing:.03em;font-weight:600;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff;backdrop-filter:blur(3px);}
+.tile.video::after{content:"";position:absolute;top:50%;left:50%;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;background:rgba(0,0,0,.45) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/22px no-repeat;border:2px solid rgba(255,255,255,.85);}
+.tile .dur{position:absolute;top:9px;right:9px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;}
+.tile.fresh{outline:3px solid var(--accent2);outline-offset:-3px;animation:glowFresh 2.2s ease;}
+@keyframes glowFresh{0%{box-shadow:0 0 0 4px var(--accent2),0 14px 30px -16px rgba(0,0,0,.6);}100%{box-shadow:0 14px 30px -16px rgba(0,0,0,.6);}}
 @keyframes pop{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:none;}}
 
-/* bouton flottant ajouter */
-.fab{position:fixed;z-index:6;right:clamp(16px,4vw,38px);bottom:clamp(18px,4vw,34px);display:inline-flex;align-items:center;gap:10px;cursor:pointer;border:none;font-family:'Jost';font-size:15px;font-weight:600;letter-spacing:.04em;color:#fff;padding:15px 24px;border-radius:999px;background:linear-gradient(135deg,var(--gold-bright),var(--gold) 60%,#a8842f);box-shadow:0 18px 38px -12px rgba(0,0,0,.6);transition:transform .25s,box-shadow .25s;}
-.fab:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 24px 48px -12px rgba(0,0,0,.65);}
+.qr-card{max-width:440px;margin:8px auto;text-align:center;background:var(--glass);border:1px solid var(--glass-brd);border-radius:var(--radius);padding:clamp(26px,5vw,42px);backdrop-filter:blur(14px);box-shadow:0 30px 70px -30px rgba(0,0,0,.6);}
+.qr-card h2{font-size:clamp(23px,4vw,30px);margin-bottom:10px;}
+.qr-card p{font-size:14.5px;color:var(--txt-soft);line-height:1.55;margin-bottom:22px;}
+.qr-frame{width:230px;height:230px;margin:0 auto 20px;background:#fff;border-radius:20px;padding:16px;box-shadow:0 16px 40px -14px rgba(0,0,0,.5);}
+.qr-frame svg{width:100%;height:100%;}
+.qr-url{display:inline-block;font-size:13px;letter-spacing:.04em;padding:10px 18px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-brd);}
+
+#capture{position:fixed;inset:0;z-index:8;display:none;align-items:flex-start;justify-content:center;padding:clamp(12px,4vh,40px) 16px;background:rgba(8,5,12,.55);backdrop-filter:blur(6px);overflow:auto;}
+#capture.show{display:flex;}
+.cap-card{width:min(520px,96vw);background:var(--bg);border:1px solid var(--glass-brd);border-radius:var(--radius);padding:clamp(18px,4vw,28px);box-shadow:0 40px 90px -30px rgba(0,0,0,.7);animation:rise .4s both;position:relative;}
+.cap-card::before{content:"";position:absolute;inset:0;border-radius:var(--radius);background:var(--overlay);pointer-events:none;}
+.cap-card>*{position:relative;z-index:2;}
+.cap-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cap-top h2{font-size:clamp(21px,4vw,27px);}
+.cap-x{width:40px;height:40px;border-radius:50%;border:1px solid var(--glass-brd);background:var(--glass);color:var(--txt);font-size:18px;cursor:pointer;}
+.viewfinder{position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 0 60px rgba(0,0,0,.35);}
+.viewfinder::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.28),transparent 60%);}
+.vf-in{position:relative;z-index:2;color:#fff;}
+.vf-cam{font-size:52px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));animation:introFloat 3s ease-in-out infinite;}
+.vf-lbl{margin-top:10px;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.92;}
+.vf-corner{position:absolute;width:24px;height:24px;border:3px solid rgba(255,255,255,.8);z-index:3;}
+.vf-corner.tl{top:14px;left:14px;border-right:none;border-bottom:none;border-radius:8px 0 0 0;}
+.vf-corner.tr{top:14px;right:14px;border-left:none;border-bottom:none;border-radius:0 8px 0 0;}
+.vf-corner.bl{bottom:14px;left:14px;border-right:none;border-top:none;border-radius:0 0 0 8px;}
+.vf-corner.br{bottom:14px;right:14px;border-left:none;border-top:none;border-radius:0 0 8px 0;}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:5;pointer-events:none;}
+.flash.go{animation:flash .5s ease;}
+@keyframes flash{0%{opacity:0;}10%{opacity:.9;}100%{opacity:0;}}
+.cap-field{margin:16px 0 4px;}
+.cap-field label{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-soft);margin-bottom:7px;}
+.cap-field input{width:100%;padding:13px 16px;border-radius:14px;border:1px solid var(--glass-brd);background:var(--glass);color:var(--txt);font-size:15px;font-family:var(--font-body);}
+.cap-field input::placeholder{color:var(--txt-soft);opacity:.7;}
+.cap-catlbl{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-soft);margin:14px 0 7px;}
+.cap-cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.cat-chip{font-size:13px;padding:9px 15px;border-radius:999px;cursor:pointer;background:var(--glass);border:1px solid var(--glass-brd);color:var(--txt);transition:all .2s;}
+.cat-chip.active{background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--on-accent);font-weight:600;border-color:transparent;}
+.cap-actions{display:flex;align-items:center;justify-content:center;gap:24px;}
+.shutter{width:76px;height:76px;border-radius:50%;cursor:pointer;border:5px solid var(--glass-brd);background:linear-gradient(135deg,var(--accent2),var(--accent));box-shadow:0 14px 30px -10px rgba(0,0,0,.55);transition:transform .15s;}
+.shutter:active{transform:scale(.92);}
+.cap-import{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;padding:12px 18px;border-radius:999px;cursor:pointer;background:var(--glass);border:1px solid var(--glass-brd);color:var(--txt);}
+
+.fab{position:fixed;z-index:7;right:clamp(16px,4vw,38px);bottom:clamp(18px,4vw,32px);display:inline-flex;align-items:center;gap:10px;cursor:pointer;border:none;font-size:15px;font-weight:600;color:var(--on-accent);padding:15px 24px;border-radius:999px;background:linear-gradient(135deg,var(--accent2),var(--accent));box-shadow:0 18px 38px -12px rgba(0,0,0,.6);transition:transform .25s;}
+.fab[hidden]{display:none;}
+.fab:hover{transform:translateY(-3px) scale(1.02);}
 .fab .plus{font-size:21px;line-height:1;}
 
-/* toast */
-.toast{position:fixed;z-index:7;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:12px;padding:13px 20px;border-radius:16px;background:rgba(20,12,16,.86);border:1px solid rgba(255,255,255,.22);box-shadow:0 18px 40px -14px rgba(0,0,0,.7);backdrop-filter:blur(8px);transition:opacity .35s,transform .35s;max-width:min(420px,90vw);}
+.toast{position:fixed;z-index:10;left:50%;bottom:100px;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:12px;padding:13px 20px;border-radius:16px;background:rgba(20,12,16,.9);border:1px solid rgba(255,255,255,.22);box-shadow:0 18px 40px -14px rgba(0,0,0,.7);backdrop-filter:blur(8px);transition:opacity .35s,transform .35s;max-width:min(420px,90vw);color:#fff;}
 .toast.show{opacity:1;transform:translate(-50%,0);}
-.toast .ava{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--plum);background:var(--gold-bright);}
+.toast .ava{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:#1c1014;background:var(--accent2);}
 .toast .tx{font-size:13.5px;line-height:1.3;}
-.toast .tx b{color:var(--gold-bright);}
+.toast .tx b{color:var(--accent2);}
 
-/* lightbox */
-.lightbox{position:fixed;z-index:9;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,5,8,.86);backdrop-filter:blur(6px);}
+.lightbox{position:fixed;z-index:11;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,5,8,.88);backdrop-filter:blur(6px);}
 .lightbox.show{display:flex;}
-.lb-img{max-width:min(900px,92vw);max-height:82vh;border-radius:14px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);background:var(--bg);}
-.lb-cap{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-size:14px;color:rgba(255,255,255,.9);text-align:center;}
-.lb-btn{position:absolute;top:50%;transform:translateY(-50%);width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;color:#fff;font-size:24px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);transition:background .2s;}
+.lb-img{max-width:min(900px,92vw);max-height:80vh;border-radius:14px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);}
+.lb-cap{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:14px;color:rgba(255,255,255,.92);text-align:center;}
+.lb-cap b{color:var(--accent2);}
+.lb-btn{position:absolute;top:50%;transform:translateY(-50%);width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;color:#fff;font-size:24px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);}
 .lb-btn:hover{background:rgba(255,255,255,.3);}
 .lb-prev{left:18px;}.lb-next{right:18px;}
 .lb-close{position:absolute;top:18px;right:18px;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;color:#fff;font-size:22px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);}
-.lb-close:hover{background:rgba(255,255,255,.3);}
 
-/* sélecteur de thème */
-.theme-switch{position:relative;z-index:2;padding:6px clamp(16px,4vw,40px) 30px;text-align:center;}
-.theme-switch .ts-label{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:14px;}
-.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;}
-.chip{font-size:13px;letter-spacing:.03em;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(5px);transition:background .2s,transform .2s;}
-.chip:hover{background:rgba(255,255,255,.26);transform:translateY(-2px);}
-.chip.active{background:#fff;color:var(--plum);font-weight:600;border-color:#fff;}
-
-@media(max-width:520px){.topbar{flex-wrap:wrap;}.grid{columns:2 140px;}.fab span.lbl{display:none;}.fab{padding:16px;}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+@media(max-width:520px){.grid{columns:2 140px;}.fab span.lbl{display:none;}.fab{padding:16px;}.seg button{padding:8px 12px;font-size:12px;}.tab{font-size:10px;letter-spacing:.1em;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}#intro.fade-out{opacity:0;}}
 </style>
 </head>
 <body>
 
+<div class="charms" id="charms"></div>
+
+<div id="intro">
+  <div class="intro-top"><div class="intro-script" id="iScript">—</div><div class="intro-sub" id="iSub">—</div></div>
+  <div class="intro-center"><div class="intro-glow"></div><div class="intro-emoji" id="iEmoji">💍</div></div>
+  <div class="intro-bottom">
+    <div class="intro-tagline" id="iTagline">—</div>
+    <div class="intro-orn"><span class="l"></span><span class="d">✦</span><span class="r"></span></div>
+    <div class="intro-date" id="iDate">—</div>
+    <div class="intro-tap">✦&nbsp;&nbsp;Toucher pour entrer&nbsp;&nbsp;✦</div>
+  </div>
+</div>
+
 <div class="topbar">
-  <a class="back" href="index.html">← Retour à Mementos-Memorie</a>
-  <span class="preview-pill">Démo — exemple de galerie</span>
+  <div class="tb-left"><a class="back" href="index.html">← Retour à Mementos-Memorie</a></div>
+  <div class="tb-right"><span class="brand"><img src="logo-memento.svg" alt="">Mementos</span></div>
+</div>
+<div class="style-switch"><div class="ss-label">Choisissez une ambiance</div><div class="seg" id="styleSeg"></div><div class="ss-note">✨ Ces ambiances ne sont que des exemples : votre galerie est <b>entièrement personnalisable</b> — vos couleurs, votre logo, vos catégories et votre message d'accueil.</div></div>
+
+<main id="app" hidden>
+  <div class="app-head">
+    <div class="app-crest" id="crest">💍</div>
+    <h1 id="title">—</h1>
+    <div class="meta"><span id="date">📅</span><span id="place">📍</span></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="share">Partager</button>
+    <button class="tab" data-tab="gallery">Galerie</button>
+    <button class="tab" data-tab="qr">QR Code</button>
+  </div>
+
+  <section class="panel panel-anim" id="panel-share">
+    <p class="share-msg" id="shareMsg">—</p>
+    <div class="cards-grid" id="cardsGrid"></div>
+    <div class="share-hint">Touchez une catégorie pour ajouter vos photos & vidéos</div>
+  </section>
+
+  <section class="panel" id="panel-gallery" hidden>
+    <div class="gal-head">
+      <div class="gh-text">
+        <h2 id="galTitle">—</h2>
+        <div class="gh-sub"><span class="gh-count" id="cPhotos">0</span> photos · <span class="gh-count" id="cVideos">0</span> vidéos partagées par vos invités</div>
+      </div>
+      <span class="dl" id="dlBtn">⬇ Tout télécharger</span>
+    </div>
+    <div class="gal-tools" id="galTools"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="panel" id="panel-qr" hidden>
+    <div class="qr-card">
+      <h2>Rejoignez la galerie</h2>
+      <p>Scannez ce QR code pour ajouter vos photos et voir celles des autres invités, en direct.</p>
+      <div class="qr-frame" id="qrFrame"></div>
+      <span class="qr-url" id="qrUrl">mementos.app/—</span>
+    </div>
+  </section>
+</main>
+
+<button class="fab" id="fab" hidden><span class="plus">＋</span><span class="lbl">Ajouter</span></button>
+
+<div id="capture">
+  <div class="cap-card">
+    <div class="cap-top"><h2 id="capTitle">Ajouter un souvenir</h2><button class="cap-x" id="capClose" aria-label="Fermer">✕</button></div>
+    <div class="viewfinder">
+      <span class="vf-corner tl"></span><span class="vf-corner tr"></span><span class="vf-corner bl"></span><span class="vf-corner br"></span>
+      <div class="vf-in"><div class="vf-cam">📸</div><div class="vf-lbl">Aperçu caméra — démo</div></div>
+      <div class="flash" id="flash"></div>
+    </div>
+    <div class="cap-field"><label for="capName">Votre prénom</label><input id="capName" type="text" maxlength="40" placeholder="Ex. Camille"></div>
+    <div class="cap-catlbl">Catégorie</div>
+    <div class="cap-cats" id="capCats"></div>
+    <div class="cap-actions">
+      <button class="cap-import" id="capImport">🖼️ Importer</button>
+      <button class="shutter" id="shutter" aria-label="Prendre la photo"></button>
+      <span style="width:76px"></span>
+    </div>
+  </div>
 </div>
 
-<!-- ÉCRAN 1 : ACCUEIL -->
-<section class="screen" id="welcome">
-  <div class="welcome-card">
-    <div class="crest" id="crest">💍</div>
-    <span class="eyebrow" id="eyebrow">Bienvenue</span>
-    <h1 id="title">Mariage de Léa &amp; Tom</h1>
-    <div class="meta">
-      <span id="date">📅 12 juin 2026</span>
-      <span id="place">📍 Domaine des Roses · Lyon</span>
-    </div>
-    <div class="divider"></div>
-    <p class="hosts-msg" id="message">« Partagez vos plus beaux instants de cette journée. »</p>
-    <button class="btn-gold" id="enterBtn">Entrer dans la galerie</button>
-  </div>
-</section>
+<div class="toast" id="toast"><div class="ava" id="toastAva">?</div><div class="tx" id="toastTx"></div></div>
 
-<!-- ÉCRAN 2 : GALERIE -->
-<section class="screen" id="gallery" hidden>
-  <div class="gal-head">
-    <div class="gal-crest" id="galCrest">💍</div>
-    <div class="gh-text">
-      <h2 id="galTitle">Mariage de Léa & Tom</h2>
-      <div class="gh-sub"><span class="gh-count" id="cPhotos">0</span> photos · <span class="gh-count" id="cVideos">0</span> vidéos partagées par vos invités</div>
-    </div>
-    <span class="dl" id="dlBtn">⬇ Tout télécharger</span>
-  </div>
-
-  <div class="gal-tools">
-    <button class="filter active" data-filter="all">Tout</button>
-    <button class="filter" data-filter="photo">Photos</button>
-    <button class="filter" data-filter="video">Vidéos</button>
-    <span class="live-tag"><span class="dot"></span> En direct</span>
-  </div>
-
-  <div class="grid" id="grid"></div>
-</section>
-
-<!-- bouton flottant : simuler un ajout -->
-<button class="fab" id="fab" hidden><span class="plus">＋</span><span class="lbl">Ajouter une photo</span></button>
-
-<!-- toast -->
-<div class="toast" id="toast">
-  <div class="ava" id="toastAva">?</div>
-  <div class="tx" id="toastTx"></div>
-</div>
-
-<!-- lightbox -->
 <div class="lightbox" id="lightbox">
   <button class="lb-close" id="lbClose" aria-label="Fermer">✕</button>
   <button class="lb-btn lb-prev" id="lbPrev" aria-label="Précédent">‹</button>
@@ -175,176 +288,176 @@ img{display:block;max-width:100%;}
   <div class="lb-cap" id="lbCap"></div>
 </div>
 
-<!-- sélecteur de thème -->
-<div class="theme-switch">
-  <div class="ts-label">Voir un autre thème</div>
-  <div class="chips" id="chips"></div>
-</div>
-
 <script>
-/* ───── Données des 8 thèmes (ordre des couleurs = celui des cartes du site) ───── */
-const THEMES = {
-  mariage:      {label:'Mariage',             icon:'💍', eyebrow:'Notre mariage',      title:'Mariage de Léa & Tom',       date:'12 juin 2026',     place:'Domaine des Roses · Lyon', message:'« Partagez vos plus beaux instants de cette journée — chaque photo nous fera revivre ce moment. »', bg:'radial-gradient(circle at 30% 20%,#f6d9c9,#c87e74 70%,#8a4b46)', accent:'#c87e74', guests:['Camille','Thomas','Léa','Hugo','Manon','Paul','Sarah','Lucas']},
-  anniversaire: {label:'Anniversaire',        icon:'🎉', eyebrow:'On fête ça',         title:'Les 50 ans de Sophie',       date:'5 septembre 2026', place:'Bordeaux',                 message:'« Immortalisez chaque sourire et chaque bougie — ce soir, on collectionne les souvenirs. »',        bg:'radial-gradient(circle at 70% 25%,#ffe6a8,#c9a24b 65%,#8a6620)', accent:'#c9a24b', guests:['Sophie','Marc','Julie','Nadia','Théo','Inès','Yanis','Clara']},
-  teambuilding: {label:'Teambuilding',        icon:'🤝', eyebrow:'Esprit d’équipe',    title:'Séminaire Lumen 2026',       date:'18 mars 2026',     place:'Annecy',                   message:'« Capturez les meilleurs moments de ces deux jours : une trace collective de l’énergie de l’équipe. »', bg:'radial-gradient(circle at 40% 30%,#ffd2a3,#c0440f 65%,#7a2c08)', accent:'#c0440f', guests:['Équipe RH','Marketing','Karim','Léna','Ops','Dev','Sales','Direction']},
-  fiancailles:  {label:'Fiançailles',         icon:'💛', eyebrow:'Notre promesse',     title:'Fiançailles d’Inès & Karim', date:'21 juin 2026',     place:'Paris',                    message:'« Le début de notre histoire mérite d’être partagé — envoyez-nous vos photos de ce moment. »',       bg:'radial-gradient(circle at 65% 20%,#ffdfe0,#d98a8a 65%,#8a4150)', accent:'#d98a8a', guests:['Inès','Karim','Maman','Léo','Amélie','Sami','Nora','Tonton']},
-  bapteme:      {label:'Baptême & Communion', icon:'🕊️', eyebrow:'En famille',          title:'Baptême de Gabriel',         date:'14 mai 2026',      place:'Nantes',                   message:'« Réunissons tous les souvenirs de cette belle journée en famille. »',                              bg:'radial-gradient(circle at 35% 25%,#fbe6cf,#e7c98f 60%,#a8842f)', accent:'#c9a24b', guests:['Marraine','Parrain','Mamie','Papi','Élise','Gabriel','Louis','Emma']},
-  gala:         {label:'Soirée & Gala',       icon:'🥂', eyebrow:'Grand rendez-vous',  title:'Gala annuel Étoiles',        date:'29 novembre 2026', place:'Hôtel Royal · Marseille',  message:'« Du cocktail à la remise des prix, une trace élégante de cette soirée d’exception. »',             bg:'radial-gradient(circle at 60% 30%,#b98aa0,#5b3a48 65%,#2f1b24)', accent:'#b98aa0', guests:['Présidence','Invité VIP','Orchestre','Table 4','Photographe','Service','Jury','Lauréats']},
-  evjf:         {label:'EVJF / EVG',           icon:'🎊', eyebrow:'Entre amis',         title:'EVJF de Manon',              date:'7 août 2026',      place:'Biarritz',                 message:'« Tous les fous rires du week-end au même endroit — surtout les plus folles ! »',                   bg:'radial-gradient(circle at 40% 20%,#ffe2c2,#e0a06a 65%,#9a5a2a)', accent:'#e0a06a', guests:['Manon','Les copines','Chloé','Jade','Romane','Anaïs','Lou','Maëlys']},
-  diplome:      {label:'Remise de diplôme',   icon:'🎓', eyebrow:'Jour de fierté',     title:'Promotion 2026',             date:'27 juin 2026',     place:'Campus · Toulouse',        message:'« Célébrons cette réussite ensemble — partagez vos photos de la cérémonie. »',                      bg:'radial-gradient(circle at 65% 25%,#f0d9a0,#b8893a 60%,#6e4d18)', accent:'#b8893a', guests:['Promo A','Promo B','Parents','Doyen','Léo','Sarah','Mehdi','Camille']}
+/* ═══ helpers de style ═══ */
+const CG="'Cormorant Garamond',serif",JO="'Jost',sans-serif",PF="'Playfair Display',serif",FR="'Fraunces',serif",PO="'Poppins',sans-serif",FD="'Fredoka',sans-serif",QU="'Quicksand',sans-serif",OU="'Outfit',sans-serif";
+function hx(h,a){h=h.replace('#','');const n=parseInt(h,16);return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';}
+function dk(id,label,icon,bg,accent,accent2,fh,fb){return{id,label,icon,bg,overlay:'linear-gradient(to bottom,rgba(8,6,14,.12),rgba(8,6,14,.46))',accent,accent2,txt:'#f5f2ea',txtSoft:'rgba(245,242,234,.78)',glass:'rgba(255,255,255,.07)',glassBrd:hx(accent2,.34),onAccent:'#13111c',fontHead:fh,fontBody:fb};}
+function lt(id,label,icon,bg,accent,accent2,txt,fh,fb){return{id,label,icon,bg,overlay:'linear-gradient(to bottom,rgba(255,255,255,.05),rgba(90,90,110,.10))',accent,accent2,txt,txtSoft:hx(txt,.7),glass:'rgba(255,255,255,.55)',glassBrd:hx(accent,.30),onAccent:'#ffffff',fontHead:fh,fontBody:fb};}
+function wm(id,label,icon,bg,accent,accent2,onAccent,fh,fb){return{id,label,icon,bg,overlay:'linear-gradient(to bottom,rgba(20,12,16,.20),rgba(20,12,16,.5))',accent,accent2,txt:'#fff',txtSoft:'rgba(255,255,255,.85)',glass:'rgba(255,255,255,.13)',glassBrd:'rgba(255,255,255,.30)',onAccent,fontHead:fh,fontBody:fb};}
+
+/* ═══ 8 occasions ═══ */
+const OCC={
+  mariage:{kind:'Mariage',pi:'💍',eventName:'Léa & Tom',title:'Mariage de Léa & Tom',date:'12 juin 2026',place:'Domaine des Roses · Lyon',tagline:'Vos souvenirs en partage',url:'mementos.app/lea-tom',
+    message:'« Partagez vos plus beaux instants de cette journée — chaque photo nous fera revivre ce moment. »',
+    guests:['Camille','Thomas','Léa','Hugo','Manon','Paul','Sarah','Lucas'],charms:['💍','🤍','🥂','✨','🌸'],
+    categories:[{emoji:'💍',name:'Cérémonie',desc:'L’échange des vœux et des alliances'},{emoji:'🥂',name:'Cocktail',desc:'Les bulles et les retrouvailles'},{emoji:'🍽️',name:'Dîner',desc:'Le repas et les discours'},{emoji:'💃',name:'Piste de danse',desc:'La fête jusqu’au bout de la nuit'}],
+    styles:[wm('champagne','Or & Champagne','💍','radial-gradient(circle at 30% 20%,#f6d9c9,#c87e74 70%,#8a4b46)','#c9a24b','#e7c98f','#3a2630',CG,JO),lt('botanique','Botanique','🌿','linear-gradient(160deg,#f3f1e7 0%,#dfe7d6 55%,#b9c9ad 100%)','#6f8f6a','#9bb58c','#2f3a2c',FR,OU),dk('nuit','Nuit étoilée','✨','radial-gradient(circle at 50% 0%,#243b55 0%,#141e30 55%,#0a0f1c 100%)','#c9a24b','#f0d488',PF,JO)]},
+
+  anniversaire:{kind:'Anniversaire',pi:'🎉',eventName:'Sophie',title:'Les 50 ans de Sophie',date:'5 septembre 2026',place:'Bordeaux',tagline:'On collectionne les souvenirs',url:'mementos.app/sophie-50',
+    message:'« Immortalisez chaque sourire et chaque bougie — ce soir, on collectionne les souvenirs ! »',
+    guests:['Sophie','Marc','Julie','Nadia','Théo','Inès','Yanis','Clara'],charms:['🎉','🎂','🎈','🎁','🎊'],
+    categories:[{emoji:'🎈',name:'Arrivée',desc:'Les invités & les premiers sourires'},{emoji:'🎂',name:'Gâteau & bougies',desc:'Le moment du vœu'},{emoji:'🎁',name:'Cadeaux',desc:'Les surprises et les sourires'},{emoji:'🎉',name:'Fête & danse',desc:'On danse jusqu’au bout de la nuit'}],
+    styles:[wm('confetti','Confetti festif','🎉','radial-gradient(circle at 25% 15%,#ff9a8b 0%,#ff6a88 40%,#a55eea 100%)','#ff4d8d','#ffd166','#3a1030',FD,PO),lt('pastel','Pastel doux','🎈','linear-gradient(160deg,#fde8f3 0%,#e7e0ff 50%,#d6f0fb 100%)','#c77dff','#ff9ecb','#52406b',FD,QU),dk('ornuit','Or & Nuit','🥂','radial-gradient(circle at 50% 10%,#2a2a35 0%,#1a1a22 60%,#0d0d12 100%)','#d4af37','#f6e27a',PF,OU)]},
+
+  teambuilding:{kind:'Teambuilding & séminaire',pi:'🤝',eventName:'Séminaire Lumen 2026',title:'Séminaire Lumen 2026',date:'18 mars 2026',place:'Annecy',tagline:'L’énergie de l’équipe',url:'mementos.app/lumen-2026',
+    message:'« Capturez les meilleurs moments de ces deux jours : une trace collective de l’énergie de l’équipe. »',
+    guests:['Karim','Léna','Marketing','Ops','Dev','Sales','RH','Direction'],charms:['🤝','💡','⭐','🎯','✨'],
+    categories:[{emoji:'🤝',name:'Arrivée',desc:'Accueil & cohésion d’équipe'},{emoji:'💡',name:'Ateliers',desc:'Les sessions de travail'},{emoji:'🍴',name:'Déjeuner',desc:'Le repas d’équipe'},{emoji:'🎉',name:'Soirée',desc:'La soirée de clôture'}],
+    styles:[wm('energie','Énergie corporate','🤝','linear-gradient(150deg,#1f7ae0 0%,#16a3b8 55%,#0a2440 100%)','#1f7ae0','#36d6c3','#072036',PO,PO),lt('clairpro','Clair pro','💼','linear-gradient(160deg,#eef3fb 0%,#dce7f6 55%,#c5d6ee 100%)','#2563eb','#60a5fa','#1e293b',OU,OU),dk('indigo','Nuit indigo','🌙','radial-gradient(circle at 50% 0%,#2a2d6b 0%,#171a3a 60%,#0a0c1e 100%)','#6366f1','#a5b4fc',OU,OU)]},
+
+  fiancailles:{kind:'Fiançailles',pi:'💛',eventName:'Inès & Karim',title:'Fiançailles d’Inès & Karim',date:'21 juin 2026',place:'Paris',tagline:'Le début de notre histoire',url:'mementos.app/ines-karim',
+    message:'« Le début de notre histoire mérite d’être partagé — envoyez-nous vos photos de ce moment. »',
+    guests:['Inès','Karim','Maman','Léo','Amélie','Sami','Nora','Tonton'],charms:['💛','💍','🥂','✨','🌷'],
+    categories:[{emoji:'💛',name:'Arrivée',desc:'Les premiers invités'},{emoji:'🥂',name:'Discours',desc:'Le grand moment'},{emoji:'📸',name:'Photos',desc:'Les souvenirs à deux'},{emoji:'🎶',name:'Fête',desc:'La célébration'}],
+    styles:[wm('tendresse','Tendresse dorée','💛','radial-gradient(circle at 30% 20%,#ffe9d6,#e6a89a 70%,#8a4f5a)','#d98a8a','#f0c987','#5a2a3a',CG,JO),lt('champclair','Champ clair','🌷','linear-gradient(160deg,#fdf2ee 0%,#f7e2e0 55%,#f0cdc6 100%)','#cf7a86','#f3b7a0','#5a3340',FR,OU),dk('roseenuit','Nuit rosée','✨','radial-gradient(circle at 50% 0%,#3a2330 0%,#241522 60%,#140b13 100%)','#d98a8a','#f3c2c2',PF,JO)]},
+
+  bapteme:{kind:'Baptême & communion',pi:'🕊️',eventName:'Gabriel',title:'Baptême de Gabriel',date:'14 mai 2026',place:'Nantes',tagline:'Un souvenir en famille',url:'mementos.app/gabriel',
+    message:'« Réunissons tous les souvenirs de cette belle journée en famille. »',
+    guests:['Marraine','Parrain','Mamie','Papi','Élise','Gabriel','Louis','Emma'],charms:['🕊️','🤍','✨','🎈','💫'],
+    categories:[{emoji:'🕊️',name:'Cérémonie',desc:'Le moment sacré'},{emoji:'👨‍👩‍👧',name:'En famille',desc:'Tous réunis'},{emoji:'🍰',name:'Repas',desc:'Le déjeuner & le gâteau'},{emoji:'🎈',name:'Jeux',desc:'Les enfants s’amusent'}],
+    styles:[lt('douceur','Douceur pastel','🕊️','linear-gradient(160deg,#f3f8fc 0%,#e4eef7 55%,#cfe6f3 100%)','#7fb1d8','#a7d3ea','#2f4858',CG,JO),wm('blancor','Blanc & or','✨','radial-gradient(circle at 30% 20%,#fbf3e2,#e8d3a8 70%,#a98a4f)','#c9a24b','#ecd8a8','#3a2f1a',CG,JO),dk('cielnuit','Ciel nuit','🌙','radial-gradient(circle at 50% 0%,#22426a 0%,#142a45 60%,#0a1626 100%)','#7fb1d8','#cfe6f3',PF,JO)]},
+
+  gala:{kind:'Soirée d’entreprise & gala',pi:'🥂',eventName:'Gala Étoiles',title:'Gala annuel Étoiles',date:'29 novembre 2026',place:'Hôtel Royal · Marseille',tagline:'Une soirée d’exception',url:'mementos.app/gala-etoiles',
+    message:'« Du cocktail à la remise des prix, une trace élégante de cette soirée d’exception. »',
+    guests:['Présidence','Invité VIP','Table 4','Jury','Service','Orchestre','Lauréats','Photographe'],charms:['🥂','🏆','✨','🌟','🎶'],
+    categories:[{emoji:'🥂',name:'Cocktail',desc:'L’accueil & les bulles'},{emoji:'🍽️',name:'Dîner',desc:'Le repas de gala'},{emoji:'🏆',name:'Remise des prix',desc:'Le grand moment'},{emoji:'🎶',name:'Danse',desc:'La piste s’enflamme'}],
+    styles:[dk('noiror','Noir & or','🥂','radial-gradient(circle at 50% 0%,#1c1c20 0%,#121214 60%,#08080a 100%)','#d4af37','#f6e27a',PF,OU),wm('bordeaux','Bordeaux royal','🍷','radial-gradient(circle at 30% 15%,#6a1f2e,#3a0e18 70%,#1f060c)','#b08d57','#e8c987','#2a0e14',CG,JO),dk('emeraude','Émeraude chic','✨','radial-gradient(circle at 50% 0%,#10342b 0%,#0a221c 60%,#051310 100%)','#1f8a70','#7fd6bf',PF,OU)]},
+
+  evjf:{kind:'EVJF / EVG',pi:'🎊',eventName:'Manon',title:'EVJF de Manon',date:'7 août 2026',place:'Biarritz',tagline:'Le week-end entre amies',url:'mementos.app/evjf-manon',
+    message:'« Tous les fous rires du week-end au même endroit — surtout les plus folles ! »',
+    guests:['Manon','Chloé','Jade','Romane','Anaïs','Lou','Maëlys','Les copines'],charms:['🎉','💄','🥂','✨','🎊'],
+    categories:[{emoji:'💄',name:'Préparatifs',desc:'On se prépare'},{emoji:'🎉',name:'Activités',desc:'Le programme de folie'},{emoji:'🍸',name:'Repas',desc:'Le dîner & les cocktails'},{emoji:'🎁',name:'Surprises',desc:'Les moments inoubliables'}],
+    styles:[wm('rosepop','Rose pop','🎊','radial-gradient(circle at 25% 15%,#ff9ac4 0%,#ff5d9e 45%,#c52b7a 100%)','#ff4d8d','#ffd166','#3a1030',PO,PO),lt('girly','Pastel girly','💕','linear-gradient(160deg,#fdeaf4 0%,#f3def7 55%,#e6d3fb 100%)','#e26fae','#ffc2dd','#5a2a48',FD,QU),dk('neon','Néon nuit','🪩','radial-gradient(circle at 70% 10%,#3a1860 0%,#1b1036 55%,#0a0618 100%)','#ff2e8b','#2de2e6',OU,OU)]},
+
+  diplome:{kind:'Remise de diplôme',pi:'🎓',eventName:'Promotion 2026',title:'Promotion 2026',date:'27 juin 2026',place:'Campus · Toulouse',tagline:'Jour de fierté',url:'mementos.app/promo-2026',
+    message:'« Célébrons cette réussite ensemble — partagez vos photos de la cérémonie. »',
+    guests:['Léo','Sarah','Mehdi','Camille','Promo A','Promo B','Parents','Doyen'],charms:['🎓','📜','⭐','🎉','✨'],
+    categories:[{emoji:'🎓',name:'Cérémonie',desc:'Le discours & l’entrée'},{emoji:'📜',name:'Remise',desc:'Le diplôme en main'},{emoji:'📸',name:'Photos',desc:'Avec la promo'},{emoji:'🥳',name:'Fête',desc:'On célèbre la réussite'}],
+    styles:[wm('academique','Académique or','🎓','radial-gradient(circle at 50% 0%,#243b55,#16273d 70%,#0a1322)','#c9a24b','#f0d488','#14233a',PF,JO),lt('campus','Clair campus','📜','linear-gradient(160deg,#eef3fb 0%,#e3ebf6 55%,#d2ddee 100%)','#2563eb','#f0b429','#1e293b',OU,OU),dk('galanuit','Nuit de gala','✨','radial-gradient(circle at 50% 0%,#1c2030 0%,#12141e 60%,#080a12 100%)','#d4af37','#f6e27a',PF,OU)]}
 };
-const ORDER = ['mariage','anniversaire','teambuilding','fiancailles','bapteme','gala','evjf','diplome'];
+const ORDER=['mariage','anniversaire','teambuilding','fiancailles','bapteme','gala','evjf','diplome'];
 
-/* thème depuis l'URL (?theme=...) avec repli sur "mariage" */
-const params = new URLSearchParams(location.search);
-let key = (params.get('theme') || 'mariage').toLowerCase();
-if (!THEMES[key]) key = 'mariage';
-const t = THEMES[key];
+/* ═══ état ═══ */
+const params=new URLSearchParams(location.search);
+let themeKey=(params.get('theme')||'mariage').toLowerCase(); if(!OCC[themeKey]) themeKey='mariage';
+let styleIdx=parseInt(params.get('style')); if(isNaN(styleIdx)||styleIdx<0||styleIdx>2) styleIdx=0;
+let P=OCC[themeKey],S=P.styles[styleIdx];
+let userName='',capCat=0,currentCat='all';
+const root=document.documentElement;
+const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
 
-/* ───── application du thème ───── */
-document.body.style.setProperty('--bg', t.bg);
-document.body.style.background = t.bg;
-document.documentElement.style.setProperty('--accent', t.accent);
-document.title = 'Maquette — ' + t.label + ' · Mementos-Memorie';
-const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-set('crest', t.icon); set('eyebrow', t.eyebrow); set('title', t.title);
-set('date', '📅 ' + t.date); set('place', '📍 ' + t.place); set('message', t.message);
-set('galCrest', t.icon); set('galTitle', t.title);
-
-/* ───── construction de la galerie ───── */
-const VIDEO_IDX = new Set([2, 6, 11]);   // quelques tuiles "vidéo"
-const DURS = ['0:12','0:34','1:05','0:48','0:21'];
-let items = [];          // {seed, type, who, h, dur}
-function makeItem(i){
-  const who = t.guests[i % t.guests.length];
-  const isVid = VIDEO_IDX.has(i);
-  const heights = [320,420,360,500,300,440,380];
-  return { seed: key + '-' + i, type: isVid ? 'video' : 'photo', who, h: heights[i % heights.length], dur: isVid ? DURS[i % DURS.length] : null };
+/* ═══ style ═══ */
+function applyStyle(){
+  S=P.styles[styleIdx];
+  const v={'--bg':S.bg,'--overlay':S.overlay,'--accent':S.accent,'--accent2':S.accent2,'--txt':S.txt,'--txt-soft':S.txtSoft,'--glass':S.glass,'--glass-brd':S.glassBrd,'--on-accent':S.onAccent,'--font-head':S.fontHead,'--font-body':S.fontBody};
+  for(const k in v) root.style.setProperty(k,v[k]);
+  document.body.style.background=S.bg;
+  document.title='Maquette — '+P.kind+' · '+S.label;
+  set('crest',S.icon); set('iEmoji',S.icon);
+  document.querySelectorAll('#styleSeg button').forEach((b,i)=>b.classList.toggle('active',i===styleIdx));
 }
-for (let i = 0; i < 14; i++) items.push(makeItem(i));
 
-const grid = document.getElementById('grid');
-function imgUrl(seed, h){ return 'https://picsum.photos/seed/' + encodeURIComponent(seed) + '/420/' + h; }
-function renderTile(it, fresh){
-  const tile = document.createElement('figure');
-  tile.className = 'tile' + (it.type === 'video' ? ' video' : '') + (fresh ? ' fresh' : '');
-  tile.dataset.type = it.type;
-  tile.innerHTML =
-    '<img loading="lazy" src="' + imgUrl(it.seed, it.h) + '" alt="Souvenir partagé par ' + it.who + '">' +
-    (it.dur ? '<span class="dur">▶ ' + it.dur + '</span>' : '') +
-    '<figcaption class="who">📷 ' + it.who + '</figcaption>';
-  tile.addEventListener('click', () => openLightbox(it));
-  return tile;
-}
-function paint(){
-  grid.innerHTML = '';
-  items.forEach(it => grid.appendChild(renderTile(it, false)));
-  updateCounts();
-}
-function updateCounts(){
-  set('cPhotos', items.filter(i => i.type === 'photo').length);
-  set('cVideos', items.filter(i => i.type === 'video').length);
-}
-paint();
-applyFilter('all');
-
-/* ───── filtres ───── */
-function applyFilter(f){
-  document.querySelectorAll('.tile').forEach(tl => {
-    tl.style.display = (f === 'all' || tl.dataset.type === f) ? '' : 'none';
+/* ═══ occasion ═══ */
+function applyTheme(){
+  P=OCC[themeKey];
+  set('title',P.title); set('galTitle',P.title);
+  set('date','📅 '+P.date); set('place','📍 '+P.place);
+  set('shareMsg',P.message);
+  set('iScript',P.eventName); set('iSub',P.kind); set('iTagline',P.tagline); set('iDate',P.date+' · '+P.place);
+  set('qrUrl',P.url);
+  const seg=document.getElementById('styleSeg'); seg.innerHTML='';
+  P.styles.forEach((st,i)=>{const b=document.createElement('button');b.innerHTML='<span class="sw" style="background:linear-gradient(135deg,'+st.accent2+','+st.accent+')"></span>'+st.label;b.addEventListener('click',()=>{styleIdx=i;applyStyle();syncURL();});seg.appendChild(b);});
+  const cg=document.getElementById('cardsGrid'); cg.innerHTML='';
+  P.categories.forEach((c,i)=>{
+    const w=document.createElement('div'); w.className='flip-wrap';
+    w.innerHTML='<div class="flip-card"><div class="flip-face flip-front"><div class="flip-emoji">'+c.emoji+'</div><div class="flip-name">'+c.name+'</div></div><div class="flip-face flip-back"><div class="flip-emoji" style="font-size:30px">'+c.emoji+'</div><div class="flip-desc">'+c.desc+'</div><button class="flip-btn">＋ Ajouter ici</button></div></div>';
+    const card=w.querySelector('.flip-card');
+    w.addEventListener('click',()=>card.classList.toggle('flipped'));
+    w.querySelector('.flip-btn').addEventListener('click',e=>{e.stopPropagation();openCapture(i);});
+    cg.appendChild(w);
   });
+  const cc=document.getElementById('capCats'); cc.innerHTML='';
+  P.categories.forEach((c,i)=>{const ch=document.createElement('button');ch.className='cat-chip';ch.textContent=c.emoji+' '+c.name;ch.addEventListener('click',()=>{capCat=i;document.querySelectorAll('#capCats .cat-chip').forEach((x,j)=>x.classList.toggle('active',j===i));});cc.appendChild(ch);});
+  const gt=document.getElementById('galTools'); gt.innerHTML='';
+  const mkF=(key,label)=>{const b=document.createElement('button');b.className='filter'+(key==='all'?' active':'');b.dataset.cat=key;b.textContent=label;b.addEventListener('click',()=>{currentCat=key;document.querySelectorAll('#galTools .filter').forEach(x=>x.classList.toggle('active',x.dataset.cat===key));applyFilter();});return b;};
+  gt.appendChild(mkF('all','Tout'));
+  P.categories.forEach((c,i)=>gt.appendChild(mkF(String(i),c.emoji+' '+c.name)));
+  const live=document.createElement('span'); live.className='live-tag'; live.innerHTML='<span class="dot"></span> En direct'; gt.appendChild(live);
+  currentCat='all';
+  buildCharms(); buildGallery(); buildQR();
 }
-document.querySelectorAll('.filter').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    applyFilter(btn.dataset.filter);
-  });
-});
 
-/* ───── navigation accueil → galerie ───── */
-const welcome = document.getElementById('welcome');
-const gallery = document.getElementById('gallery');
-const fab = document.getElementById('fab');
-function showGallery(){
-  welcome.hidden = true; gallery.hidden = false; fab.hidden = false;
-  window.scrollTo({ top: 0 });
-}
-document.getElementById('enterBtn').addEventListener('click', showGallery);
+/* ═══ charms ═══ */
+function buildCharms(){const box=document.getElementById('charms');box.innerHTML='';const n=window.innerWidth<560?9:14;for(let i=0;i<n;i++){const s=document.createElement('span');s.className='charm';s.textContent=P.charms[i%P.charms.length];s.style.left=(Math.random()*98)+'%';s.style.fontSize=(12+Math.random()*16)+'px';s.style.animationDuration=(14+Math.random()*10)+'s';s.style.animationDelay=(-Math.random()*20)+'s';box.appendChild(s);}}
 
-/* ───── bouton + : simuler un invité qui poste ───── */
-const toast = document.getElementById('toast');
-let toastTimer;
-function showToast(name, msg){
-  document.getElementById('toastAva').textContent = (name[0] || '?').toUpperCase();
-  document.getElementById('toastTx').innerHTML = '<b>' + name + '</b> ' + msg;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
-}
-let nextIdx = items.length;
-fab.addEventListener('click', () => {
-  const newItem = makeItem(nextIdx++);
-  newItem.type = 'photo';   // un invité ajoute une photo
-  newItem.dur = null;
-  newItem.seed = key + '-add-' + nextIdx;
-  items.unshift(newItem);
-  const tile = renderTile(newItem, true);
-  grid.prepend(tile);
-  updateCounts();
-  const active = document.querySelector('.filter.active');
-  if (active) applyFilter(active.dataset.filter);
-  showToast(newItem.who, 'vient d’ajouter une photo 📸');
-  setTimeout(() => tile.classList.remove('fresh'), 2200);
-});
+/* ═══ galerie ═══ */
+const VIDEO_IDX=new Set([2,6,11]),DURS=['0:12','0:34','1:05','0:48','0:21'],HEIGHTS=[320,420,360,500,300,440,380];
+let items=[],nextIdx=0;
+function makeItem(i,opts){opts=opts||{};const who=opts.who||P.guests[i%P.guests.length];const isVid=opts.forcePhoto?false:VIDEO_IDX.has(i);const catI=opts.cat!=null?opts.cat:i%P.categories.length;return{seed:themeKey+'-'+i+'-'+(opts.tag||''),type:isVid?'video':'photo',who,h:HEIGHTS[i%HEIGHTS.length],dur:isVid?DURS[i%DURS.length]:null,catI};}
+function buildGallery(){items=[];nextIdx=14;for(let i=0;i<14;i++)items.push(makeItem(i));paint();applyFilter();}
+const grid=document.getElementById('grid');
+function imgUrl(seed,h){return 'https://picsum.photos/seed/'+encodeURIComponent(seed)+'/420/'+h;}
+function renderTile(it,fresh){const f=document.createElement('figure');f.className='tile'+(it.type==='video'?' video':'')+(fresh?' fresh':'');f.dataset.type=it.type;f.dataset.cat=String(it.catI);const c=P.categories[it.catI];f.innerHTML='<img loading="lazy" src="'+imgUrl(it.seed,it.h)+'" alt="Souvenir de '+it.who+'"><span class="cat">'+c.emoji+' '+c.name+'</span>'+(it.dur?'<span class="dur">▶ '+it.dur+'</span>':'')+'<figcaption class="who">📷 '+it.who+'</figcaption>';f.addEventListener('click',()=>openLightbox(it));return f;}
+function paint(){grid.innerHTML='';items.forEach(it=>grid.appendChild(renderTile(it,false)));updateCounts();}
+function updateCounts(){set('cPhotos',items.filter(i=>i.type==='photo').length);set('cVideos',items.filter(i=>i.type==='video').length);}
+function applyFilter(){document.querySelectorAll('.tile').forEach(tl=>{tl.style.display=(currentCat==='all'||tl.dataset.cat===currentCat)?'':'none';});}
 
-/* ───── téléchargement (démo) ───── */
-document.getElementById('dlBtn').addEventListener('click', () => {
-  showToast('Mementos-Memorie', '— dans la vraie galerie, vos ' + items.length + ' souvenirs se téléchargent en HD ✦');
-});
+/* ═══ QR factice ═══ */
+function buildQR(){const N=25,mod=8;let cells='',seed=0;for(const ch of themeKey)seed=(seed*31+ch.charCodeAt(0))>>>0;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};const finder=(x,y)=>(x<7&&y<7)||(x>=N-7&&y<7)||(x<7&&y>=N-7);for(let y=0;y<N;y++)for(let x=0;x<N;x++){let on=false;if(finder(x,y)){const lx=x>=N-7?x-(N-7):x,ly=y>=N-7?y-(N-7):y;on=(lx===0||lx===6||ly===0||ly===6)||(lx>=2&&lx<=4&&ly>=2&&ly<=4);}else on=rnd()>.52;if(on)cells+='<rect x="'+(x*mod)+'" y="'+(y*mod)+'" width="'+mod+'" height="'+mod+'"/>';}document.getElementById('qrFrame').innerHTML='<svg viewBox="0 0 '+(N*mod)+' '+(N*mod)+'" fill="#1a1118">'+cells+'</svg>';}
 
-/* ───── lightbox ───── */
-const lb = document.getElementById('lightbox');
-const lbImg = document.getElementById('lbImg');
-const lbCap = document.getElementById('lbCap');
-let lbList = [], lbPos = 0;
-function openLightbox(it){
-  lbList = items.filter(x => x.type !== '__none');
-  lbPos = lbList.indexOf(it);
-  renderLb();
-  lb.classList.add('show');
-}
-function renderLb(){
-  const it = lbList[lbPos];
-  lbImg.src = imgUrl(it.seed, 700);
-  lbImg.alt = 'Souvenir partagé par ' + it.who;
-  lbCap.innerHTML = (it.type === 'video' ? '🎬 Vidéo' : '📷 Photo') + ' · partagé par <b>' + it.who + '</b>';
-}
-function move(d){ lbPos = (lbPos + d + lbList.length) % lbList.length; renderLb(); }
-document.getElementById('lbNext').addEventListener('click', e => { e.stopPropagation(); move(1); });
-document.getElementById('lbPrev').addEventListener('click', e => { e.stopPropagation(); move(-1); });
-document.getElementById('lbClose').addEventListener('click', () => lb.classList.remove('show'));
-lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('show'); });
-document.addEventListener('keydown', e => {
-  if (!lb.classList.contains('show')) return;
-  if (e.key === 'Escape') lb.classList.remove('show');
-  if (e.key === 'ArrowRight') move(1);
-  if (e.key === 'ArrowLeft') move(-1);
-});
+/* ═══ onglets ═══ */
+const panels={share:document.getElementById('panel-share'),gallery:document.getElementById('panel-gallery'),qr:document.getElementById('panel-qr')};
+function switchTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===name));for(const k in panels){panels[k].hidden=k!==name;panels[k].classList.remove('panel-anim');}void panels[name].offsetWidth;panels[name].classList.add('panel-anim');document.getElementById('fab').hidden=(name==='qr');window.scrollTo({top:0});}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
 
-/* ───── chips de thèmes ───── */
-const chips = document.getElementById('chips');
-ORDER.forEach(k => {
-  const a = document.createElement('a');
-  a.className = 'chip' + (k === key ? ' active' : '');
-  a.href = 'maquette.html?theme=' + k;
-  a.textContent = THEMES[k].icon + '  ' + THEMES[k].label;
-  if (k === key) a.setAttribute('aria-current', 'page');
-  chips.appendChild(a);
-});
+/* ═══ capture ═══ */
+const capture=document.getElementById('capture');
+function openCapture(catI){capCat=catI||0;document.getElementById('capName').value=userName;set('capTitle','Ajouter — '+P.categories[capCat].name);document.querySelectorAll('#capCats .cat-chip').forEach((x,j)=>x.classList.toggle('active',j===capCat));capture.classList.add('show');}
+document.getElementById('capClose').addEventListener('click',()=>capture.classList.remove('show'));
+capture.addEventListener('click',e=>{if(e.target===capture)capture.classList.remove('show');});
+document.getElementById('fab').addEventListener('click',()=>openCapture(0));
 
-/* si l'URL contient #galerie, on saute directement à la galerie */
-if (location.hash === '#galerie') showGallery();
+const toast=document.getElementById('toast');let toastTimer;
+function showToast(name,msg){document.getElementById('toastAva').textContent=(name[0]||'?').toUpperCase();document.getElementById('toastTx').innerHTML='<b>'+name+'</b> '+msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),3200);}
+function addPhoto(){userName=document.getElementById('capName').value.trim();const who=userName||P.guests[items.length%P.guests.length];const it=makeItem(nextIdx++,{who,cat:capCat,forcePhoto:true,tag:'add'});items.unshift(it);capture.classList.remove('show');switchTab('gallery');currentCat='all';document.querySelectorAll('#galTools .filter').forEach(x=>x.classList.toggle('active',x.dataset.cat==='all'));const tile=renderTile(it,true);grid.prepend(tile);updateCounts();applyFilter();showToast(who,'a ajouté une photo · '+P.categories[capCat].name+' 📸');setTimeout(()=>tile.classList.remove('fresh'),2400);}
+document.getElementById('shutter').addEventListener('click',()=>{const fl=document.getElementById('flash');fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go');setTimeout(addPhoto,420);});
+document.getElementById('capImport').addEventListener('click',addPhoto);
+document.getElementById('dlBtn').addEventListener('click',()=>showToast('Mementos','— dans la vraie galerie, vos '+items.length+' souvenirs se téléchargent en HD ✦'));
+
+/* ═══ lightbox ═══ */
+const lb=document.getElementById('lightbox'),lbImg=document.getElementById('lbImg'),lbCap=document.getElementById('lbCap');
+let lbList=[],lbPos=0;
+function openLightbox(it){lbList=items.filter(x=>currentCat==='all'||String(x.catI)===currentCat);lbPos=lbList.indexOf(it);if(lbPos<0){lbList=items.slice();lbPos=lbList.indexOf(it);}renderLb();lb.classList.add('show');}
+function renderLb(){const it=lbList[lbPos],c=P.categories[it.catI];lbImg.src=imgUrl(it.seed,700);lbImg.alt='Souvenir de '+it.who;lbCap.innerHTML=(it.type==='video'?'🎬 Vidéo':'📷 Photo')+' · '+c.emoji+' '+c.name+' · partagé par <b>'+it.who+'</b>';}
+function move(d){lbPos=(lbPos+d+lbList.length)%lbList.length;renderLb();}
+document.getElementById('lbNext').addEventListener('click',e=>{e.stopPropagation();move(1);});
+document.getElementById('lbPrev').addEventListener('click',e=>{e.stopPropagation();move(-1);});
+document.getElementById('lbClose').addEventListener('click',()=>lb.classList.remove('show'));
+lb.addEventListener('click',e=>{if(e.target===lb)lb.classList.remove('show');});
+document.addEventListener('keydown',e=>{if(!lb.classList.contains('show'))return;if(e.key==='Escape')lb.classList.remove('show');if(e.key==='ArrowRight')move(1);if(e.key==='ArrowLeft')move(-1);});
+
+/* ═══ intro ═══ */
+const intro=document.getElementById('intro');let introDone=false;
+function closeIntro(){if(introDone)return;introDone=true;intro.classList.add('fade-out');setTimeout(()=>{intro.style.display='none';document.getElementById('app').hidden=false;document.getElementById('fab').hidden=false;},1150);}
+intro.addEventListener('click',closeIntro);
+setTimeout(closeIntro,4500);
+
+/* ═══ url ═══ */
+function syncURL(){const u=new URL(location);u.searchParams.set('theme',themeKey);u.searchParams.set('style',styleIdx);history.replaceState(null,'',u);}
+
+/* ═══ init ═══ */
+applyTheme();applyStyle();syncURL();
 </script>
 </body>
 </html>

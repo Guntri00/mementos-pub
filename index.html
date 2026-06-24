@@ -688,13 +688,10 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
       <h2>Conçu pour vos plus beaux événements</h2>
       <p>Mariage, anniversaire, teambuilding… Mementos-Memorie capture l'émotion de tous vos rassemblements. <b>Cliquez sur une occasion pour découvrir un aperçu de la maquette.</b></p>
     </div>
-    <!-- ⚙️ MAQUETTES PAR OCCASION — liens vers les déploiements Vercel en ligne :
-           Mariage      → https://memorie-one.vercel.app
-           Anniversaire → https://aniversaire.vercel.app  (projet alimenté par le code d'aniv01)
-           Teambuilding → https://soir-e-alpha.vercel.app
-         Les 5 autres ouvrent la maquette générique maquette.html?theme=… -->
+    <!-- ⚙️ MAQUETTES PAR OCCASION — toutes ouvrent la maquette interactive maquette.html?theme=…
+         (intro animée, onglets Partager/Galerie/QR, catégories, plusieurs ambiances). -->
     <div class="occ-grid">
-      <a class="occ reveal" href="https://memorie-one.vercel.app" target="_blank" rel="noopener" aria-label="Voir la maquette : Mariage">
+      <a class="occ reveal" href="maquette.html?theme=mariage" target="_blank" rel="noopener" aria-label="Voir la maquette : Mariage">
         <div class="occ-inner">
           <div class="occ-ico">💍</div>
           <h3>Mariage</h3>
@@ -702,7 +699,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
           <span class="occ-link">Découvrir la maquette →</span>
         </div>
       </a>
-      <a class="occ reveal" href="https://aniversaire.vercel.app" target="_blank" rel="noopener" aria-label="Voir la maquette : Anniversaire">
+      <a class="occ reveal" href="maquette.html?theme=anniversaire" target="_blank" rel="noopener" aria-label="Voir la maquette : Anniversaire">
         <div class="occ-inner">
           <div class="occ-ico">🎉</div>
           <h3>Anniversaire</h3>
@@ -710,7 +707,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
           <span class="occ-link">Découvrir la maquette →</span>
         </div>
       </a>
-      <a class="occ reveal" href="https://soir-e-alpha.vercel.app" target="_blank" rel="noopener" aria-label="Voir la maquette : Teambuilding">
+      <a class="occ reveal" href="maquette.html?theme=teambuilding" target="_blank" rel="noopener" aria-label="Voir la maquette : Teambuilding">
         <div class="occ-inner">
           <div class="occ-ico">🤝</div>
           <h3>Teambuilding</h3>
@@ -759,6 +756,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
         </div>
       </a>
     </div>
+    <p class="occ-perso reveal" style="text-align:center;max-width:60ch;margin:34px auto 0;opacity:.92;">✨ Ces maquettes ne sont que des exemples : <b>votre galerie est entièrement personnalisée à votre image</b> — vos couleurs, votre logo, vos catégories et votre message d'accueil. <a href="#devis" style="text-decoration:underline;">Parlons de votre projet →</a></p>
   </div>
 </section>
 
