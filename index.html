@@ -296,6 +296,11 @@ section{padding:clamp(70px,9vw,120px) 0;}
 .price-list li::before{content:"✦";color:var(--gold-bright);flex-shrink:0;}
 .price-card .btn-primary{font-size:16px;padding:17px 44px;}
 .price-card .price-reassure{margin-top:16px;font-size:13.5px;color:rgba(255,255,255,.72);letter-spacing:.03em;}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:940px;margin:0 auto;align-items:stretch;}
+.price-grid .price-card{max-width:none;margin:0;display:flex;flex-direction:column;}
+.price-grid .price-card .amount .num{font-size:clamp(54px,8vw,84px);}
+.price-grid .price-card .price-list{flex:1;}
+.price-card.featured{border-color:var(--gold-bright);box-shadow:0 36px 90px -28px rgba(231,201,143,.4);}
 
 /* ── Devis (formulaire) ── */
 .quote{background:linear-gradient(160deg,var(--cream) 0%,var(--cream-deep) 100%);}
@@ -549,7 +554,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
     {"@type":"Question","name":"Y a-t-il une limite de photos ou de vidéos ?","acceptedAnswer":{"@type":"Answer","text":"Le partage est illimité pour tous vos invités, photos comme vidéos. La vidéo est d'ailleurs incluse sans supplément."}},
     {"@type":"Question","name":"Comment je récupère tous les souvenirs ?","acceptedAnswer":{"@type":"Answer","text":"Vous téléchargez l'intégralité des photos et vidéos en haute qualité, quand vous le souhaitez, en quelques clics."}},
     {"@type":"Question","name":"Mes souvenirs sont-ils privés ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Chaque galerie est dédiée à votre événement et n'est accessible qu'à vos invités. Vos souvenirs restent entre vos mains."}},
-    {"@type":"Question","name":"Combien ça coûte ?","acceptedAnswer":{"@type":"Answer","text":"La formule est à 170 € pour votre événement, avec la vidéo offerte. Pas d'abonnement ni de frais cachés."}},
+    {"@type":"Question","name":"Combien ça coûte ?","acceptedAnswer":{"@type":"Answer","text":"La formule événement est à 250 € (vidéo offerte incluse). Pour un site entièrement personnalisé à votre image, comptez 500 €. Pas d'abonnement ni de frais cachés."}},
     {"@type":"Question","name":"Et si un invité n'est pas à l'aise avec la technologie ?","acceptedAnswer":{"@type":"Answer","text":"Il suffit de scanner le QR code avec l'appareil photo du téléphone, puis d'appuyer sur un bouton pour envoyer une photo. C'est aussi simple que d'envoyer un message."}},
     {"@type":"Question","name":"Puis-je personnaliser la page à mon événement ?","acceptedAnswer":{"@type":"Answer","text":"Oui. La page d'accueil que découvrent vos invités est personnalisée au nom, à la date et aux couleurs de votre événement."}}
   ]
@@ -562,7 +567,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
   "name": "Mementos-Memorie — Galerie de souvenirs pour événement",
   "description": "Galerie photo et vidéo partagée pour vos événements, accessible via QR code, sans application. Vidéo offerte.",
   "brand": {"@type":"Brand","name":"Mementos-Memorie"},
-  "offers": {"@type":"Offer","price":"170","priceCurrency":"EUR","availability":"https://schema.org/InStock"},
+  "offers": {"@type":"AggregateOffer","lowPrice":"250","highPrice":"500","priceCurrency":"EUR","offerCount":"2","availability":"https://schema.org/InStock"},
   "aggregateRating": {"@type":"AggregateRating","ratingValue":"5","reviewCount":"3"}
 }
 </script>
@@ -598,7 +603,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
         <a href="#devis" class="btn btn-primary">Prendre rendez-vous</a>
         <a href="#how" class="btn btn-ghost">Voir comment ça marche</a>
       </div>
-      <p class="hero-note">Formule unique à <b>170 €</b> · la vidéo offerte 🎁</p>
+      <p class="hero-note">À partir de <b>250 €</b> · la vidéo offerte 🎁</p>
       <div class="hero-trust">
         <span>Sans application</span>
         <span>Photos + vidéos</span>
@@ -859,23 +864,39 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
 <section id="offre" class="pricing">
   <div class="container">
     <div class="section-head reveal">
-      <span class="kicker">L'offre</span>
+      <span class="kicker">Nos offres</span>
       <h2>Tout compris. Sans surprise.</h2>
-      <p>Une seule formule pour votre événement — sans abonnement, sans frais cachés, et la vidéo offerte.</p>
+      <p>Deux formules selon vos envies — sans abonnement, sans frais cachés, et la vidéo toujours offerte.</p>
     </div>
-    <div class="price-card reveal reveal-scale">
-      <span class="badge">Formule événement</span>
-      <div class="amount"><span class="cur">€</span><span class="num">170</span><span class="per">pour tout votre événement</span></div>
-      <div class="free">🎁 Vidéo offerte — incluse sans supplément</div>
-      <ul class="price-list">
-        <li>Votre galerie photo &amp; vidéo, prête le jour J</li>
-        <li>QR code et page d'accueil personnalisés à votre événement</li>
-        <li>Partage illimité pour tous vos invités, sans application</li>
-        <li>Tous vos souvenirs téléchargeables en haute qualité</li>
-        <li>Accompagnement avant et pendant votre événement</li>
-      </ul>
-      <a href="#devis" class="btn btn-primary">Prendre rendez-vous</a>
-      <p class="price-reassure">✓ Sans engagement · Réponse sous 24–48 h</p>
+    <div class="price-grid">
+      <div class="price-card reveal reveal-scale">
+        <span class="badge">Formule événement</span>
+        <div class="amount"><span class="cur">€</span><span class="num">250</span><span class="per">pour tout votre événement</span></div>
+        <div class="free">🎁 Vidéo offerte — incluse sans supplément</div>
+        <ul class="price-list">
+          <li>Votre galerie photo &amp; vidéo, prête le jour J</li>
+          <li>QR code et page d'accueil personnalisés à votre événement</li>
+          <li>Partage illimité pour tous vos invités, sans application</li>
+          <li>Tous vos souvenirs téléchargeables en haute qualité</li>
+          <li>Accompagnement avant et pendant votre événement</li>
+        </ul>
+        <a href="#devis" class="btn btn-primary">Prendre rendez-vous</a>
+        <p class="price-reassure">✓ Sans engagement · Réponse sous 24–48 h</p>
+      </div>
+      <div class="price-card featured reveal reveal-scale">
+        <span class="badge">Site personnalisé · Sur mesure</span>
+        <div class="amount"><span class="cur">€</span><span class="num">500</span><span class="per">site dédié à votre événement</span></div>
+        <div class="free">✨ Un site entièrement à votre image</div>
+        <ul class="price-list">
+          <li>Tout ce qui est inclus dans la formule événement</li>
+          <li>Site web sur mesure : vos couleurs, votre logo, votre design</li>
+          <li>Adresse web dédiée à votre événement</li>
+          <li>Mise en page et catégories personnalisées</li>
+          <li>Accompagnement premium, de A à Z</li>
+        </ul>
+        <a href="#devis" class="btn btn-primary">Prendre rendez-vous</a>
+        <p class="price-reassure">✓ Sans engagement · Réponse sous 24–48 h</p>
+      </div>
     </div>
   </div>
 </section>
@@ -925,7 +946,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
       </div>
       <div class="faq-item">
         <button class="faq-q">Combien ça coûte ? <span class="chev">+</span></button>
-        <div class="faq-a"><p>La formule est à 170 € pour votre événement, avec la vidéo offerte. Pas d'abonnement ni de frais cachés. Prenez rendez-vous pour une proposition adaptée.</p></div>
+        <div class="faq-a"><p>La formule événement est à 250 € (vidéo offerte incluse). Pour un site entièrement personnalisé à votre image, comptez 500 €. Pas d'abonnement ni de frais cachés. Prenez rendez-vous pour une proposition adaptée.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q">Et si un invité n'est pas à l'aise avec la technologie ? <span class="chev">+</span></button>
