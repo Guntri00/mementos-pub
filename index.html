@@ -303,6 +303,8 @@ section{padding:clamp(70px,9vw,120px) 0;}
 .price-grid .price-card .price-list{flex:1;}
 .price-card.featured{border-color:var(--gold-bright);box-shadow:0 36px 90px -28px rgba(231,201,143,.4);}
 .price-ribbon{position:absolute;top:-15px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--plum);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:7px 20px;border-radius:999px;box-shadow:0 12px 26px -8px rgba(0,0,0,.55);white-space:nowrap;z-index:2;}
+.price-card .amount .old{display:block;font-family:'Jost';font-size:21px;font-weight:500;color:rgba(255,255,255,.5);text-decoration:line-through;text-decoration-color:var(--rose);margin-bottom:4px;}
+.sale-flag{display:inline-block;background:linear-gradient(135deg,#e0615c,#c83f54);color:#fff;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin-bottom:14px;box-shadow:0 10px 24px -8px rgba(200,63,84,.55);}
 
 /* ── Devis (formulaire) ── */
 .quote{background:linear-gradient(160deg,var(--cream) 0%,var(--cream-deep) 100%);}
@@ -556,7 +558,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
     {"@type":"Question","name":"Y a-t-il une limite de photos ou de vidéos ?","acceptedAnswer":{"@type":"Answer","text":"Le partage est illimité pour tous vos invités, photos comme vidéos. La vidéo est d'ailleurs incluse sans supplément."}},
     {"@type":"Question","name":"Comment je récupère tous les souvenirs ?","acceptedAnswer":{"@type":"Answer","text":"Vous téléchargez l'intégralité des photos et vidéos en haute qualité, quand vous le souhaitez, en quelques clics."}},
     {"@type":"Question","name":"Mes souvenirs sont-ils privés ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Chaque galerie est dédiée à votre événement et n'est accessible qu'à vos invités. Vos souvenirs restent entre vos mains."}},
-    {"@type":"Question","name":"Combien ça coûte ?","acceptedAnswer":{"@type":"Answer","text":"La formule événement, sur l'un de nos thèmes déjà prêts, est à 250 € (vidéo offerte incluse). Pour un suivi personnalisé — plusieurs rendez-vous et accompagnement jusqu'au jour J, avec modifications de dernière minute — comptez 450 €. Pas d'abonnement ni de frais cachés."}},
+    {"@type":"Question","name":"Combien ça coûte ?","acceptedAnswer":{"@type":"Answer","text":"La formule événement, sur l'un de nos thèmes déjà prêts, est à 250 € (vidéo offerte incluse). Pour un suivi personnalisé — plusieurs rendez-vous et accompagnement jusqu'au jour J, avec modifications de dernière minute — comptez 350 € en ce moment (au lieu de 450 €, offre en cours). Pas d'abonnement ni de frais cachés."}},
     {"@type":"Question","name":"Et si un invité n'est pas à l'aise avec la technologie ?","acceptedAnswer":{"@type":"Answer","text":"Il suffit de scanner le QR code avec l'appareil photo du téléphone, puis d'appuyer sur un bouton pour envoyer une photo. C'est aussi simple que d'envoyer un message."}},
     {"@type":"Question","name":"Puis-je personnaliser la page à mon événement ?","acceptedAnswer":{"@type":"Answer","text":"Oui. La page d'accueil que découvrent vos invités est personnalisée au nom, à la date et aux couleurs de votre événement."}}
   ]
@@ -569,7 +571,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
   "name": "Mementos-Memorie — Galerie de souvenirs pour événement",
   "description": "Galerie photo et vidéo partagée pour vos événements, accessible via QR code, sans application. Vidéo offerte.",
   "brand": {"@type":"Brand","name":"Mementos-Memorie"},
-  "offers": {"@type":"AggregateOffer","lowPrice":"250","highPrice":"450","priceCurrency":"EUR","offerCount":"2","availability":"https://schema.org/InStock"},
+  "offers": {"@type":"AggregateOffer","lowPrice":"250","highPrice":"350","priceCurrency":"EUR","offerCount":"2","availability":"https://schema.org/InStock"},
   "aggregateRating": {"@type":"AggregateRating","ratingValue":"5","reviewCount":"3"}
 }
 </script>
@@ -888,7 +890,8 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
       <div class="price-card featured reveal reveal-scale">
         <span class="price-ribbon">★ Recommandé</span>
         <span class="badge">Suivi personnalisé</span>
-        <div class="amount"><span class="cur">€</span><span class="num">450</span><span class="per">accompagnement jusqu'au jour J</span></div>
+        <div class="sale-flag">🔥 En solde · −100 €</div>
+        <div class="amount"><span class="old">450 €</span><span class="cur">€</span><span class="num">350</span><span class="per">accompagnement jusqu'au jour J</span></div>
         <div class="free">✨ Un suivi sur mesure, de A à Z</div>
         <ul class="price-list">
           <li>Tout ce qui est inclus dans la formule événement</li>
@@ -949,7 +952,7 @@ nav .nav-links a:not(.btn):hover::after{width:100%;}
       </div>
       <div class="faq-item">
         <button class="faq-q">Combien ça coûte ? <span class="chev">+</span></button>
-        <div class="faq-a"><p>La formule événement, sur l'un de nos thèmes déjà prêts, est à 250 € (vidéo offerte incluse). Pour un suivi personnalisé — plusieurs rendez-vous et accompagnement jusqu'au jour J, avec modifications de dernière minute — comptez 450 €. Pas d'abonnement ni de frais cachés. Prenez rendez-vous pour une proposition adaptée.</p></div>
+        <div class="faq-a"><p>La formule événement, sur l'un de nos thèmes déjà prêts, est à 250 € (vidéo offerte incluse). Pour un suivi personnalisé — plusieurs rendez-vous et accompagnement jusqu'au jour J, avec modifications de dernière minute — comptez 350 € en ce moment (au lieu de 450 €, offre en cours). Pas d'abonnement ni de frais cachés. Prenez rendez-vous pour une proposition adaptée.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q">Et si un invité n'est pas à l'aise avec la technologie ? <span class="chev">+</span></button>
